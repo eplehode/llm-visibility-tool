@@ -1,0 +1,9 @@
+{
+  "name": "llm-visibility-tool",
+  "version": "1.0.0",
+  "description": "AI tool",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  }
+}
