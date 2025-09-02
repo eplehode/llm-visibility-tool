@@ -8,6 +8,20 @@
     {
       "source": "/",
       "destination": "/public/index.html"
+    },
+    {
+      "source": "/api/analyze",
+      "destination": "/api/analyze"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
     }
   ]
 }
