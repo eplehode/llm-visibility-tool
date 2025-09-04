@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Visibility Diagnosis Tool</title>
+    <title>LLM Visibility Diagnosis Tool - Multi-Page Analysis</title>
     <style>
         * {
             margin: 0;
@@ -48,10 +48,104 @@
             margin-bottom: 30px;
         }
 
+        .analysis-mode {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .mode-option {
+            position: relative;
+        }
+
+        .mode-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .mode-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            transition: all 0.3s;
+            min-width: 150px;
+        }
+
+        .mode-option label:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .mode-option input[type="radio"]:checked + label {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea10, #764ba210);
+        }
+
+        .mode-option .mode-icon {
+            font-size: 1.5rem;
+        }
+
+        .mode-option .mode-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .mode-option .mode-desc {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
         .input-group {
             display: flex;
             gap: 15px;
             align-items: center;
+        }
+
+        .multi-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .url-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .url-row label {
+            min-width: 140px;
+            font-weight: 600;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .url-row .required {
+            color: #f44336;
+        }
+
+        .url-row input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .url-row input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
         }
 
         input[type="text"] {
@@ -79,6 +173,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            margin-top: 10px;
         }
 
         .analyze-btn:hover {
@@ -90,6 +185,62 @@
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .page-breakdown {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .page-summary h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .page-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .page-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .page-item:hover {
+            background: #e8ebff;
+        }
+
+        .page-path {
+            color: #666;
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+
+        .page-score {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .aggregation-note {
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            color: #999;
+            font-size: 0.9rem;
+            font-style: italic;
         }
 
         .results-section {
@@ -332,6 +483,12 @@
             color: white;
             font-weight: 600;
         }
+
+        .help-text {
+            color: #999;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -339,19 +496,75 @@
         <div class="header">
             <h1>🤖 LLM Visibility Diagnosis Tool</h1>
             <p>Analyze how well AI assistants can discover, understand, and cite your website</p>
-            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">8 Real Factors • 100% Verified Analysis • No Estimates</p>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">8 Real Factors • Multi-Page Analysis • 100% Verified</p>
         </div>
 
         <div class="input-section">
-            <div class="input-group">
+            <div class="analysis-mode">
+                <div class="mode-option">
+                    <input type="radio" name="mode" id="single" value="single" checked>
+                    <label for="single">
+                        <span class="mode-icon">📄</span>
+                        <span class="mode-title">Single Page</span>
+                        <span class="mode-desc">Quick analysis</span>
+                    </label>
+                </div>
+                <div class="mode-option">
+                    <input type="radio" name="mode" id="multi" value="multi">
+                    <label for="multi">
+                        <span class="mode-icon">📚</span>
+                        <span class="mode-title">Multi-Page</span>
+                        <span class="mode-desc">Better accuracy</span>
+                    </label>
+                </div>
+                <div class="mode-option">
+                    <input type="radio" name="mode" id="auto" value="auto">
+                    <label for="auto">
+                        <span class="mode-icon">🔍</span>
+                        <span class="mode-title">Auto-Discovery</span>
+                        <span class="mode-desc">Via sitemap</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Single Page Mode -->
+            <div id="singleMode" class="input-group">
                 <input type="text" id="domainInput" placeholder="Enter domain (e.g., example.com)" />
                 <button class="analyze-btn" onclick="analyzeDomain()">Analyze Website</button>
+            </div>
+            
+            <!-- Multi Page Mode -->
+            <div id="multiMode" class="multi-input-group" style="display: none;">
+                <div class="url-row">
+                    <label>🏠 Homepage <span class="required">*</span></label>
+                    <input type="text" id="url1" placeholder="https://example.com" />
+                </div>
+                <div class="url-row">
+                    <label>📝 Blog/Article</label>
+                    <input type="text" id="url2" placeholder="https://example.com/blog/article (optional)" />
+                </div>
+                <div class="url-row">
+                    <label>🛍️ Product Page</label>
+                    <input type="text" id="url3" placeholder="https://example.com/product (optional)" />
+                </div>
+                <div class="url-row">
+                    <label>ℹ️ About Page</label>
+                    <input type="text" id="url4" placeholder="https://example.com/about (optional)" />
+                </div>
+                <button class="analyze-btn" onclick="analyzeMultiple()">Analyze All Pages</button>
+                <p class="help-text">💡 Tip: Analyzing multiple pages gives you a more accurate overall score</p>
+            </div>
+            
+            <!-- Auto Discovery Mode -->
+            <div id="autoMode" class="input-group" style="display: none;">
+                <input type="text" id="domainAutoInput" placeholder="Enter domain (e.g., example.com)" />
+                <button class="analyze-btn" onclick="analyzeAuto()">Auto-Discover & Analyze</button>
             </div>
         </div>
 
         <div id="loadingSection" class="loading" style="display: none;">
             <div class="spinner"></div>
-            <p>Analyzing website visibility for AI assistants...</p>
+            <p id="loadingMessage">Analyzing website visibility for AI assistants...</p>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
             </div>
@@ -362,6 +575,8 @@
         </div>
 
         <div id="resultsSection" class="results-section">
+            <div id="pageBreakdown"></div>
+            
             <div class="overall-score">
                 <div class="score-circle">
                     <svg width="200" height="200">
@@ -377,7 +592,7 @@
                     </svg>
                     <div class="score-number" id="totalScore">0</div>
                 </div>
-                <div class="score-label">LLM Visibility Score</div>
+                <div class="score-label">LLM Visibility Score (out of 80)</div>
                 <div class="score-status" id="scoreStatus">Calculating...</div>
             </div>
 
@@ -388,14 +603,40 @@
     </div>
 
     <script>
-        // ===== CONFIGURATION - YOUR VERCEL URL IS HERE! =====
+        // ===== CONFIGURATION - YOUR VERCEL URL =====
         const PROXY_BASE_URL = 'https://llm-visibility-tool-chi.vercel.app/api/analyze';
         
         // Configuration for bot checking
         const AI_BOTS = ['GPTBot', 'OAI-SearchBot', 'ClaudeBot', 'PerplexityBot', 'ChatGPT-User', 'CCBot', 'Amazonbot', 'Applebot'];
         
         let analysisResults = {};
+        let currentMode = 'single';
 
+        // Mode switching
+        document.querySelectorAll('input[name="mode"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                currentMode = e.target.value;
+                toggleAnalysisMode(currentMode);
+            });
+        });
+
+        function toggleAnalysisMode(mode) {
+            // Hide all modes
+            document.getElementById('singleMode').style.display = 'none';
+            document.getElementById('multiMode').style.display = 'none';
+            document.getElementById('autoMode').style.display = 'none';
+            
+            // Show selected mode
+            if (mode === 'single') {
+                document.getElementById('singleMode').style.display = 'flex';
+            } else if (mode === 'multi') {
+                document.getElementById('multiMode').style.display = 'block';
+            } else if (mode === 'auto') {
+                document.getElementById('autoMode').style.display = 'flex';
+            }
+        }
+
+        // ===== SINGLE PAGE ANALYSIS (Original) =====
         async function analyzeDomain() {
             const domainInput = document.getElementById('domainInput');
             const domain = domainInput.value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
@@ -404,6 +645,9 @@
                 showError('Please enter a valid domain');
                 return;
             }
+
+            // Clear any previous page breakdown
+            document.getElementById('pageBreakdown').innerHTML = '';
 
             // Reset and show loading
             document.getElementById('resultsSection').classList.remove('active');
@@ -429,35 +673,29 @@
             const baseUrl = `https://${domain}`;
             
             // Update progress
-            updateProgress(10, 'Checking bot accessibility...');
+            updateProgress(12, 'Checking bot accessibility...');
             analysisResults.factors.botAccessibility = await checkBotAccessibility(baseUrl);
             
-            updateProgress(20, 'Analyzing content structure...');
+            updateProgress(24, 'Analyzing content structure...');
             analysisResults.factors.parsability = await checkParsability(baseUrl);
             
-            updateProgress(30, 'Evaluating citation friendliness...');
+            updateProgress(36, 'Evaluating citation friendliness...');
             analysisResults.factors.citationFriendliness = await checkCitationFriendliness(baseUrl);
             
-            updateProgress(40, 'Assessing authority signals...');
+            updateProgress(48, 'Assessing authority signals...');
             analysisResults.factors.authority = await checkAuthority(baseUrl);
             
-            updateProgress(50, 'Checking content freshness...');
+            updateProgress(60, 'Checking content freshness...');
             analysisResults.factors.freshness = await checkFreshness(baseUrl);
             
-            updateProgress(60, 'Analyzing technical signals...');
+            updateProgress(72, 'Analyzing technical signals...');
             analysisResults.factors.technical = await checkTechnical(baseUrl);
             
-            updateProgress(70, 'Reviewing content formats...');
+            updateProgress(84, 'Reviewing content formats...');
             analysisResults.factors.contentFormat = await checkContentFormat(baseUrl);
             
-            updateProgress(80, 'Checking licensing readiness...');
+            updateProgress(96, 'Checking licensing readiness...');
             analysisResults.factors.licensing = await checkLicensing(baseUrl);
-            
-            updateProgress(90, 'Analyzing citation presence...');
-            analysisResults.factors.citationMonitoring = checkCitationMonitoring();
-            
-            updateProgress(95, 'Evaluating competitive position...');
-            analysisResults.factors.competitive = checkCompetitive();
             
             updateProgress(100, 'Generating report...');
             
@@ -468,6 +706,391 @@
             displayResults();
         }
 
+        // ===== MULTI-PAGE ANALYSIS =====
+        async function analyzeMultiple() {
+            const urls = [
+                document.getElementById('url1').value.trim(),
+                document.getElementById('url2').value.trim(),
+                document.getElementById('url3').value.trim(),
+                document.getElementById('url4').value.trim()
+            ].filter(url => url && url.length > 0);
+            
+            if (urls.length === 0) {
+                showError('Please enter at least the homepage URL');
+                return;
+            }
+            
+            // Reset and show loading
+            document.getElementById('resultsSection').classList.remove('active');
+            document.getElementById('errorSection').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+            
+            try {
+                const allResults = {
+                    domain: new URL(urls[0].startsWith('http') ? urls[0] : 'https://' + urls[0]).hostname,
+                    pages: [],
+                    aggregatedFactors: {},
+                    totalScore: 0,
+                    pageCount: urls.length
+                };
+                
+                // Analyze each page
+                for (let i = 0; i < urls.length; i++) {
+                    let url = urls[i];
+                    if (!url.startsWith('http')) {
+                        url = 'https://' + url;
+                    }
+                    
+                    const pathname = new URL(url).pathname || '/';
+                    const progress = Math.round((i / urls.length) * 90);
+                    updateProgress(progress, `Analyzing page ${i + 1} of ${urls.length}: ${pathname}`);
+                    
+                    const pageResults = await analyzeOnePage(url);
+                    allResults.pages.push({
+                        url: url,
+                        path: pathname,
+                        factors: pageResults
+                    });
+                }
+                
+                updateProgress(95, 'Combining results...');
+                
+                // Aggregate results
+                allResults.aggregatedFactors = aggregatePageResults(allResults.pages);
+                allResults.totalScore = calculateAggregatedScore(allResults.aggregatedFactors);
+                
+                // Display multi-page results
+                displayMultiPageResults(allResults);
+                
+            } catch (error) {
+                showError(`Analysis failed: ${error.message}`);
+            } finally {
+                document.getElementById('loadingSection').style.display = 'none';
+            }
+        }
+
+        async function analyzeOnePage(url) {
+            const results = {};
+            
+            try {
+                // Parse URL properly
+                if (!url.startsWith('http')) {
+                    url = 'https://' + url;
+                }
+                const parsedUrl = new URL(url);
+                const baseUrl = parsedUrl.origin;
+                
+                // Run all checks for this specific page
+                results.botAccessibility = await checkBotAccessibility(baseUrl);
+                results.parsability = await checkParsability(url);
+                results.citationFriendliness = await checkCitationFriendliness(url);
+                results.authority = await checkAuthority(url);
+                results.freshness = await checkFreshness(baseUrl);
+                results.technical = await checkTechnical(url);
+                results.contentFormat = await checkContentFormat(url);
+                results.licensing = await checkLicensing(baseUrl);
+                
+            } catch (error) {
+                console.error(`Error analyzing ${url}:`, error);
+                // Return empty factors if page fails
+                const emptyFactor = { value: 0, max: 10, details: ['Failed to analyze'], checks: [] };
+                return {
+                    botAccessibility: emptyFactor,
+                    parsability: emptyFactor,
+                    citationFriendliness: emptyFactor,
+                    authority: emptyFactor,
+                    freshness: emptyFactor,
+                    technical: emptyFactor,
+                    contentFormat: emptyFactor,
+                    licensing: emptyFactor
+                };
+            }
+            
+            return results;
+        }
+
+        function aggregatePageResults(pages) {
+            const aggregated = {};
+            const factorNames = [
+                'botAccessibility', 'parsability', 'citationFriendliness',
+                'authority', 'freshness', 'technical', 'contentFormat', 'licensing'
+            ];
+            
+            factorNames.forEach(factor => {
+                // Collect scores from all pages
+                const scores = pages
+                    .map(p => p.factors[factor])
+                    .filter(f => f && f.value !== undefined);
+                
+                if (scores.length > 0) {
+                    // For site-wide factors, take the MAX
+                    // For page-specific factors, take the AVERAGE
+                    const useMax = ['botAccessibility', 'licensing', 'freshness'].includes(factor);
+                    
+                    if (useMax) {
+                        // Use best score (e.g., robots.txt only needs to be set once)
+                        aggregated[factor] = scores.reduce((best, current) => 
+                            current.value > best.value ? current : best
+                        );
+                        aggregated[factor].details.push(`Best of ${scores.length} pages`);
+                    } else {
+                        // Average across pages
+                        const avgValue = Math.round(
+                            scores.reduce((sum, s) => sum + s.value, 0) / scores.length
+                        );
+                        
+                        // Combine all checks and details
+                        const allDetails = new Set();
+                        const allChecks = [];
+                        
+                        scores.forEach(score => {
+                            score.details.forEach(d => allDetails.add(d));
+                            if (score.checks && score.checks.length > 0) {
+                                score.checks.forEach(check => {
+                                    const existing = allChecks.find(c => c.name === check.name);
+                                    if (!existing) {
+                                        allChecks.push(check);
+                                    }
+                                });
+                            }
+                        });
+                        
+                        aggregated[factor] = {
+                            value: avgValue,
+                            max: scores[0].max,
+                            details: [`Averaged from ${scores.length} pages`, ...Array.from(allDetails)],
+                            checks: allChecks
+                        };
+                    }
+                }
+            });
+            
+            return aggregated;
+        }
+
+        function calculateAggregatedScore(factors) {
+            let total = 0;
+            for (const factor in factors) {
+                total += factors[factor].value || 0;
+            }
+            return Math.round(total);
+        }
+
+        function calculatePageScore(factors) {
+            let total = 0;
+            for (const factor in factors) {
+                if (factors[factor] && factors[factor].value) {
+                    total += factors[factor].value;
+                }
+            }
+            return Math.round(total);
+        }
+
+        function displayMultiPageResults(results) {
+            // Show page breakdown
+            const pageBreakdown = document.getElementById('pageBreakdown');
+            pageBreakdown.innerHTML = `
+                <div class="page-breakdown">
+                    <div class="page-summary">
+                        <h3>📊 Analyzed ${results.pageCount} Pages</h3>
+                        <div class="page-list">
+                            ${results.pages.map((page, index) => `
+                                <div class="page-item">
+                                    <span class="page-path">Page ${index + 1}: ${page.path}</span>
+                                    <span class="page-score">${calculatePageScore(page.factors)}/80</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="aggregation-note">
+                            Site-wide factors (robots.txt, SSL) use best score • Content factors use average score
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Update the global results for display
+            analysisResults = {
+                domain: results.domain,
+                factors: results.aggregatedFactors,
+                totalScore: results.totalScore
+            };
+            
+            // Use existing display functions
+            animateScore(results.totalScore);
+            displayFactors();
+            generateRecommendations();
+            
+            // Show results
+            document.getElementById('resultsSection').classList.add('active');
+        }
+
+        // ===== AUTO-DISCOVERY ANALYSIS =====
+        async function analyzeAuto() {
+            const domain = document.getElementById('domainAutoInput').value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+            
+            if (!domain) {
+                showError('Please enter a domain');
+                return;
+            }
+            
+            // Reset and show loading
+            document.getElementById('resultsSection').classList.remove('active');
+            document.getElementById('errorSection').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+            
+            try {
+                const baseUrl = `https://${domain}`;
+                
+                updateProgress(10, 'Looking for sitemap...');
+                
+                // Try to get sitemap
+                const sitemapXml = await fetchWithCORS(`${baseUrl}/sitemap.xml`, 'sitemap');
+                
+                let urls = [];
+                
+                if (sitemapXml && sitemapXml.includes('<loc>')) {
+                    // Parse URLs from sitemap
+                    urls = parseSitemapUrls(sitemapXml, baseUrl);
+                    updateProgress(20, `Found ${urls.length} pages in sitemap`);
+                    
+                    // Sample key pages (max 5)
+                    urls = selectKeyPages(urls, 5);
+                    updateProgress(30, `Selected ${urls.length} key pages to analyze`);
+                } else {
+                    // No sitemap, use common pages
+                    updateProgress(20, 'No sitemap found, checking common pages...');
+                    urls = [
+                        baseUrl,
+                        `${baseUrl}/about`,
+                        `${baseUrl}/blog`,
+                        `${baseUrl}/products`,
+                        `${baseUrl}/services`
+                    ];
+                    
+                    // Check which URLs actually exist
+                    const validUrls = [];
+                    for (const url of urls) {
+                        const exists = await checkUrlExists(url);
+                        if (exists) {
+                            validUrls.push(url);
+                        }
+                    }
+                    urls = validUrls.slice(0, 5);
+                    updateProgress(30, `Found ${urls.length} pages to analyze`);
+                }
+                
+                if (urls.length === 0) {
+                    urls = [baseUrl]; // At least analyze homepage
+                }
+                
+                // Now analyze these pages
+                const allResults = {
+                    domain: domain,
+                    pages: [],
+                    aggregatedFactors: {},
+                    totalScore: 0,
+                    pageCount: urls.length
+                };
+                
+                for (let i = 0; i < urls.length; i++) {
+                    const progress = 30 + (i / urls.length) * 60;
+                    const pathname = new URL(urls[i]).pathname || '/';
+                    updateProgress(progress, `Analyzing page ${i + 1} of ${urls.length}: ${pathname}`);
+                    
+                    const pageResults = await analyzeOnePage(urls[i]);
+                    allResults.pages.push({
+                        url: urls[i],
+                        path: pathname,
+                        factors: pageResults
+                    });
+                }
+                
+                updateProgress(95, 'Combining results...');
+                
+                // Aggregate and display
+                allResults.aggregatedFactors = aggregatePageResults(allResults.pages);
+                allResults.totalScore = calculateAggregatedScore(allResults.aggregatedFactors);
+                
+                displayMultiPageResults(allResults);
+                
+            } catch (error) {
+                showError(`Auto-discovery failed: ${error.message}`);
+            } finally {
+                document.getElementById('loadingSection').style.display = 'none';
+            }
+        }
+
+        function parseSitemapUrls(xml, baseUrl) {
+            const urls = [];
+            
+            // Extract URLs from <loc> tags using regex
+            const locRegex = /<loc>(.*?)<\/loc>/g;
+            let match;
+            
+            while ((match = locRegex.exec(xml)) !== null) {
+                const url = match[1];
+                if (url && url.startsWith(baseUrl)) {
+                    urls.push(url);
+                }
+            }
+            
+            return urls;
+        }
+
+        function selectKeyPages(urls, maxCount = 5) {
+            // Prioritize important pages
+            const priorities = [
+                { pattern: /^\/?$/, weight: 10 },           // Homepage
+                { pattern: /\/about/i, weight: 9 },         // About page
+                { pattern: /\/product/i, weight: 7 },       // Products
+                { pattern: /\/service/i, weight: 7 },       // Services
+                { pattern: /\/blog\/[^\/]+$/i, weight: 6 }, // Blog posts
+                { pattern: /\/contact/i, weight: 5 },       // Contact
+                { pattern: /\/faq/i, weight: 5 }            // FAQ
+            ];
+            
+            // Score each URL
+            const scoredUrls = urls.map(url => {
+                let score = 1;
+                const path = new URL(url).pathname;
+                
+                priorities.forEach(p => {
+                    if (p.pattern.test(path)) {
+                        score = Math.max(score, p.weight);
+                    }
+                });
+                
+                return { url, score };
+            });
+            
+            // Sort by score and take top N
+            scoredUrls.sort((a, b) => b.score - a.score);
+            
+            // Always include homepage if available
+            const homepage = urls.find(u => new URL(u).pathname === '/' || new URL(u).pathname === '');
+            const selected = homepage ? [homepage] : [];
+            
+            // Add other pages
+            for (const item of scoredUrls) {
+                if (!selected.includes(item.url) && selected.length < maxCount) {
+                    selected.push(item.url);
+                }
+            }
+            
+            return selected.slice(0, maxCount);
+        }
+
+        async function checkUrlExists(url) {
+            try {
+                const response = await fetch(PROXY_BASE_URL + '?url=' + encodeURIComponent(url));
+                const data = await response.json();
+                return data.success;
+            } catch {
+                return false;
+            }
+        }
+
+        // ===== SHARED ANALYSIS FUNCTIONS =====
         async function fetchWithCORS(url, type = 'html') {
             try {
                 // Extract domain from URL if it's a full URL
@@ -504,6 +1127,7 @@
             }
         }
 
+        // [All the check functions remain the same]
         async function checkBotAccessibility(baseUrl) {
             const score = { value: 0, max: 10, details: [], checks: [] };
             
@@ -818,22 +1442,6 @@
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(htmlContent, 'text/html');
                     
-                    // Check page load time (basic check)
-                    const startTime = performance.now();
-                    await fetchWithCORS(baseUrl);
-                    const loadTime = performance.now() - startTime;
-                    
-                    if (loadTime < 3000) {
-                        score.value += 3;
-                        score.details.push('Fast load time');
-                        score.checks.push({ name: 'Page speed', status: 'pass' });
-                    } else if (loadTime < 5000) {
-                        score.value += 1;
-                        score.checks.push({ name: 'Page speed', status: 'partial' });
-                    } else {
-                        score.checks.push({ name: 'Page speed', status: 'fail' });
-                    }
-                    
                     // Check for semantic HTML5 elements
                     const hasArticle = doc.querySelector('article') !== null;
                     const hasHeader = doc.querySelector('header') !== null;
@@ -842,11 +1450,11 @@
                     
                     const semanticScore = [hasArticle, hasHeader, hasFooter, hasMain].filter(Boolean).length;
                     if (semanticScore >= 3) {
-                        score.value += 3;
+                        score.value += 4;
                         score.details.push('Clean HTML structure');
                         score.checks.push({ name: 'HTML5 structure', status: 'pass' });
                     } else if (semanticScore >= 2) {
-                        score.value += 1;
+                        score.value += 2;
                         score.checks.push({ name: 'HTML5 structure', status: 'partial' });
                     } else {
                         score.checks.push({ name: 'HTML5 structure', status: 'fail' });
@@ -857,7 +1465,7 @@
                     const imagesWithAlt = doc.querySelectorAll('img[alt]');
                     
                     if (images.length > 0 && imagesWithAlt.length / images.length > 0.8) {
-                        score.value += 2;
+                        score.value += 3;
                         score.details.push('Good alt text coverage');
                         score.checks.push({ name: 'Image alt text', status: 'pass' });
                     } else if (images.length > 0 && imagesWithAlt.length / images.length > 0.5) {
@@ -870,7 +1478,7 @@
                     // Check mobile viewport
                     const viewport = doc.querySelector('meta[name="viewport"]');
                     if (viewport) {
-                        score.value += 2;
+                        score.value += 3;
                         score.details.push('Mobile-optimized');
                         score.checks.push({ name: 'Mobile ready', status: 'pass' });
                     } else {
@@ -1010,40 +1618,14 @@
             return score;
         }
 
-        function checkCitationMonitoring() {
-            // This would require actual API access to check
-            // For now, provide guidance on what to check manually
-            const score = { value: 5, max: 10, details: [], checks: [] };
-            
-            score.details.push('Manual verification needed');
-            score.checks.push({ name: 'ChatGPT citations', status: 'partial' });
-            score.checks.push({ name: 'Perplexity inclusion', status: 'partial' });
-            score.checks.push({ name: 'Google AI Overviews', status: 'partial' });
-            
-            return score;
-        }
-
-        function checkCompetitive() {
-            // This would require competitor analysis
-            // For now, provide baseline score
-            const score = { value: 5, max: 10, details: [], checks: [] };
-            
-            score.details.push('Competitor analysis needed');
-            score.checks.push({ name: 'Market position', status: 'partial' });
-            score.checks.push({ name: 'Content gaps', status: 'partial' });
-            score.checks.push({ name: 'Schema advantage', status: 'partial' });
-            
-            return score;
-        }
-
+        // [Display functions remain the same]
         function updateProgress(percent, message) {
             const progressBar = document.getElementById('progressBar');
             progressBar.style.width = percent + '%';
             progressBar.textContent = percent + '%';
             
-            const loadingSection = document.getElementById('loadingSection');
-            const statusText = loadingSection.querySelector('p');
-            statusText.textContent = message;
+            const loadingMessage = document.getElementById('loadingMessage');
+            loadingMessage.textContent = message;
         }
 
         function calculateTotalScore() {
@@ -1087,19 +1669,19 @@
                 scoreElement.textContent = Math.round(currentScore);
             }, 20);
             
-            // Animate circle
+            // Animate circle (adjusted for max score of 80)
             const circumference = 2 * Math.PI * 90;
-            const offset = circumference - (targetScore / 100) * circumference;
+            const offset = circumference - (targetScore / 80) * circumference;
             scoreCircle.style.strokeDashoffset = offset;
             
             // Set status message
-            if (targetScore >= 80) {
+            if (targetScore >= 70) {
                 scoreStatus.textContent = 'Excellent LLM Visibility';
                 scoreStatus.style.color = '#4caf50';
-            } else if (targetScore >= 60) {
+            } else if (targetScore >= 50) {
                 scoreStatus.textContent = 'Good LLM Visibility';
-                scoreStatus.style.color = '#ff9800';
-            } else if (targetScore >= 40) {
+                scoreStatus.style.color = '#4caf50';
+            } else if (targetScore >= 35) {
                 scoreStatus.textContent = 'Moderate LLM Visibility';
                 scoreStatus.style.color = '#ff9800';
             } else {
@@ -1120,9 +1702,7 @@
                 freshness: 'Freshness & Feeds',
                 technical: 'Technical Signals',
                 contentFormat: 'Content Format',
-                licensing: 'Licensing Readiness',
-                citationMonitoring: 'Citation Monitoring',
-                competitive: 'Competitive Position'
+                licensing: 'Licensing Readiness'
             };
             
             for (const [key, factor] of Object.entries(analysisResults.factors)) {
@@ -1252,11 +1832,11 @@
                     title: 'Fix Technical Issues',
                     description: 'Technical problems make your site hard for AI to process.',
                     steps: [
-                        'Improve page load speed (target under 3 seconds)',
                         'Add alt text to all images describing their content',
                         'Implement proper HTML5 semantic structure',
                         'Add viewport meta tag for mobile optimization',
-                        'Test with Google PageSpeed Insights'
+                        'Use semantic tags: <header>, <main>, <article>, <footer>',
+                        'Validate HTML at validator.w3.org'
                     ]
                 },
                 contentFormat: {
@@ -1303,6 +1883,12 @@
         document.getElementById('domainInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 analyzeDomain();
+            }
+        });
+        
+        document.getElementById('domainAutoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                analyzeAuto();
             }
         });
     </script>
