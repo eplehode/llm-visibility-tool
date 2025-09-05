@@ -1,7 +1,8 @@
 {
   "name": "llm-visibility-tool",
-  "version": "1.0.0",
-  "description": "AI tool",
+  "version": "1.0.1",
+  "description": "LLM Visibility Diagnosis Tool",
+  "private": true,
   "scripts": {
     "dev": "vercel dev",
     "deploy": "vercel --prod"
