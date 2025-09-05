@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Visibility Diagnosis Tool - Multi-Page Analysis</title>
+    <title>LLM Visibility Diagnosis Tool</title>
     <style>
         * {
             margin: 0;
@@ -48,104 +48,10 @@
             margin-bottom: 30px;
         }
 
-        .analysis-mode {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 25px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .mode-option {
-            position: relative;
-        }
-
-        .mode-option input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-        }
-
-        .mode-option label {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            transition: all 0.3s;
-            min-width: 150px;
-        }
-
-        .mode-option label:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
-        }
-
-        .mode-option input[type="radio"]:checked + label {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea10, #764ba210);
-        }
-
-        .mode-option .mode-icon {
-            font-size: 1.5rem;
-        }
-
-        .mode-option .mode-title {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .mode-option .mode-desc {
-            font-size: 0.8rem;
-            color: #999;
-        }
-
         .input-group {
             display: flex;
             gap: 15px;
             align-items: center;
-        }
-
-        .multi-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .url-row {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .url-row label {
-            min-width: 140px;
-            font-weight: 600;
-            color: #666;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .url-row .required {
-            color: #f44336;
-        }
-
-        .url-row input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        .url-row input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
         }
 
         input[type="text"] {
@@ -173,7 +79,6 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            margin-top: 10px;
         }
 
         .analyze-btn:hover {
@@ -185,62 +90,6 @@
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
-        }
-
-        .page-breakdown {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-
-        .page-summary h3 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 1.4rem;
-        }
-
-        .page-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .page-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 3px solid #667eea;
-            transition: all 0.3s;
-        }
-
-        .page-item:hover {
-            background: #e8ebff;
-        }
-
-        .page-path {
-            color: #666;
-            font-family: monospace;
-            font-size: 0.95rem;
-        }
-
-        .page-score {
-            font-weight: bold;
-            color: #667eea;
-            font-size: 1.1rem;
-        }
-
-        .aggregation-note {
-            padding-top: 15px;
-            border-top: 1px solid #e0e0e0;
-            color: #999;
-            font-size: 0.9rem;
-            font-style: italic;
         }
 
         .results-section {
@@ -395,12 +244,39 @@
             font-size: 1.8rem;
         }
 
-        .recommendation-item {
-            background: linear-gradient(135deg, #667eea10, #764ba210);
+        .factor-section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
             border-left: 4px solid #667eea;
-            padding: 20px;
-            margin-bottom: 20px;
+        }
+
+        .factor-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .factor-explanation {
+            background: white;
+            padding: 15px;
             border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .recommendation-item {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border-left: 3px solid #764ba2;
         }
 
         .recommendation-priority {
@@ -413,8 +289,20 @@
             margin-bottom: 10px;
         }
 
+        .priority-high {
+            background: #f44336;
+        }
+
+        .priority-medium {
+            background: #ff9800;
+        }
+
+        .priority-low {
+            background: #4caf50;
+        }
+
         .recommendation-title {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: #333;
             margin-bottom: 10px;
@@ -429,6 +317,15 @@
             margin-bottom: 8px;
             color: #666;
             line-height: 1.6;
+        }
+
+        .debug-info {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            font-family: monospace;
         }
 
         .loading {
@@ -483,12 +380,6 @@
             color: white;
             font-weight: 600;
         }
-
-        .help-text {
-            color: #999;
-            font-size: 0.85rem;
-            margin-top: 5px;
-        }
     </style>
 </head>
 <body>
@@ -496,75 +387,19 @@
         <div class="header">
             <h1>🤖 LLM Visibility Diagnosis Tool</h1>
             <p>Analyze how well AI assistants can discover, understand, and cite your website</p>
-            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">8 Real Factors • Multi-Page Analysis • 100% Verified</p>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">8 Real Factors • 100% Verified Analysis • Complete Recommendations</p>
         </div>
 
         <div class="input-section">
-            <div class="analysis-mode">
-                <div class="mode-option">
-                    <input type="radio" name="mode" id="single" value="single" checked>
-                    <label for="single">
-                        <span class="mode-icon">📄</span>
-                        <span class="mode-title">Single Page</span>
-                        <span class="mode-desc">Quick analysis</span>
-                    </label>
-                </div>
-                <div class="mode-option">
-                    <input type="radio" name="mode" id="multi" value="multi">
-                    <label for="multi">
-                        <span class="mode-icon">📚</span>
-                        <span class="mode-title">Multi-Page</span>
-                        <span class="mode-desc">Better accuracy</span>
-                    </label>
-                </div>
-                <div class="mode-option">
-                    <input type="radio" name="mode" id="auto" value="auto">
-                    <label for="auto">
-                        <span class="mode-icon">🔍</span>
-                        <span class="mode-title">Auto-Discovery</span>
-                        <span class="mode-desc">Via sitemap</span>
-                    </label>
-                </div>
-            </div>
-            
-            <!-- Single Page Mode -->
-            <div id="singleMode" class="input-group">
+            <div class="input-group">
                 <input type="text" id="domainInput" placeholder="Enter domain (e.g., example.com)" />
                 <button class="analyze-btn" onclick="analyzeDomain()">Analyze Website</button>
-            </div>
-            
-            <!-- Multi Page Mode -->
-            <div id="multiMode" class="multi-input-group" style="display: none;">
-                <div class="url-row">
-                    <label>🏠 Homepage <span class="required">*</span></label>
-                    <input type="text" id="url1" placeholder="https://example.com" />
-                </div>
-                <div class="url-row">
-                    <label>📝 Blog/Article</label>
-                    <input type="text" id="url2" placeholder="https://example.com/blog/article (optional)" />
-                </div>
-                <div class="url-row">
-                    <label>🛍️ Product Page</label>
-                    <input type="text" id="url3" placeholder="https://example.com/product (optional)" />
-                </div>
-                <div class="url-row">
-                    <label>ℹ️ About Page</label>
-                    <input type="text" id="url4" placeholder="https://example.com/about (optional)" />
-                </div>
-                <button class="analyze-btn" onclick="analyzeMultiple()">Analyze All Pages</button>
-                <p class="help-text">💡 Tip: Analyzing multiple pages gives you a more accurate overall score</p>
-            </div>
-            
-            <!-- Auto Discovery Mode -->
-            <div id="autoMode" class="input-group" style="display: none;">
-                <input type="text" id="domainAutoInput" placeholder="Enter domain (e.g., example.com)" />
-                <button class="analyze-btn" onclick="analyzeAuto()">Auto-Discover & Analyze</button>
             </div>
         </div>
 
         <div id="loadingSection" class="loading" style="display: none;">
             <div class="spinner"></div>
-            <p id="loadingMessage">Analyzing website visibility for AI assistants...</p>
+            <p>Analyzing website visibility for AI assistants...</p>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
             </div>
@@ -575,8 +410,6 @@
         </div>
 
         <div id="resultsSection" class="results-section">
-            <div id="pageBreakdown"></div>
-            
             <div class="overall-score">
                 <div class="score-circle">
                     <svg width="200" height="200">
@@ -603,40 +436,14 @@
     </div>
 
     <script>
-        // ===== CONFIGURATION - YOUR VERCEL URL =====
+        // ===== CONFIGURATION - YOUR VERCEL URL IS HERE! =====
         const PROXY_BASE_URL = 'https://llm-visibility-tool-chi.vercel.app/api/analyze';
         
         // Configuration for bot checking
         const AI_BOTS = ['GPTBot', 'OAI-SearchBot', 'ClaudeBot', 'PerplexityBot', 'ChatGPT-User', 'CCBot', 'Amazonbot', 'Applebot'];
         
         let analysisResults = {};
-        let currentMode = 'single';
 
-        // Mode switching
-        document.querySelectorAll('input[name="mode"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                currentMode = e.target.value;
-                toggleAnalysisMode(currentMode);
-            });
-        });
-
-        function toggleAnalysisMode(mode) {
-            // Hide all modes
-            document.getElementById('singleMode').style.display = 'none';
-            document.getElementById('multiMode').style.display = 'none';
-            document.getElementById('autoMode').style.display = 'none';
-            
-            // Show selected mode
-            if (mode === 'single') {
-                document.getElementById('singleMode').style.display = 'flex';
-            } else if (mode === 'multi') {
-                document.getElementById('multiMode').style.display = 'block';
-            } else if (mode === 'auto') {
-                document.getElementById('autoMode').style.display = 'flex';
-            }
-        }
-
-        // ===== SINGLE PAGE ANALYSIS (Original) =====
         async function analyzeDomain() {
             const domainInput = document.getElementById('domainInput');
             const domain = domainInput.value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
@@ -645,9 +452,6 @@
                 showError('Please enter a valid domain');
                 return;
             }
-
-            // Clear any previous page breakdown
-            document.getElementById('pageBreakdown').innerHTML = '';
 
             // Reset and show loading
             document.getElementById('resultsSection').classList.remove('active');
@@ -706,391 +510,6 @@
             displayResults();
         }
 
-        // ===== MULTI-PAGE ANALYSIS =====
-        async function analyzeMultiple() {
-            const urls = [
-                document.getElementById('url1').value.trim(),
-                document.getElementById('url2').value.trim(),
-                document.getElementById('url3').value.trim(),
-                document.getElementById('url4').value.trim()
-            ].filter(url => url && url.length > 0);
-            
-            if (urls.length === 0) {
-                showError('Please enter at least the homepage URL');
-                return;
-            }
-            
-            // Reset and show loading
-            document.getElementById('resultsSection').classList.remove('active');
-            document.getElementById('errorSection').style.display = 'none';
-            document.getElementById('loadingSection').style.display = 'block';
-            
-            try {
-                const allResults = {
-                    domain: new URL(urls[0].startsWith('http') ? urls[0] : 'https://' + urls[0]).hostname,
-                    pages: [],
-                    aggregatedFactors: {},
-                    totalScore: 0,
-                    pageCount: urls.length
-                };
-                
-                // Analyze each page
-                for (let i = 0; i < urls.length; i++) {
-                    let url = urls[i];
-                    if (!url.startsWith('http')) {
-                        url = 'https://' + url;
-                    }
-                    
-                    const pathname = new URL(url).pathname || '/';
-                    const progress = Math.round((i / urls.length) * 90);
-                    updateProgress(progress, `Analyzing page ${i + 1} of ${urls.length}: ${pathname}`);
-                    
-                    const pageResults = await analyzeOnePage(url);
-                    allResults.pages.push({
-                        url: url,
-                        path: pathname,
-                        factors: pageResults
-                    });
-                }
-                
-                updateProgress(95, 'Combining results...');
-                
-                // Aggregate results
-                allResults.aggregatedFactors = aggregatePageResults(allResults.pages);
-                allResults.totalScore = calculateAggregatedScore(allResults.aggregatedFactors);
-                
-                // Display multi-page results
-                displayMultiPageResults(allResults);
-                
-            } catch (error) {
-                showError(`Analysis failed: ${error.message}`);
-            } finally {
-                document.getElementById('loadingSection').style.display = 'none';
-            }
-        }
-
-        async function analyzeOnePage(url) {
-            const results = {};
-            
-            try {
-                // Parse URL properly
-                if (!url.startsWith('http')) {
-                    url = 'https://' + url;
-                }
-                const parsedUrl = new URL(url);
-                const baseUrl = parsedUrl.origin;
-                
-                // Run all checks for this specific page
-                results.botAccessibility = await checkBotAccessibility(baseUrl);
-                results.parsability = await checkParsability(url);
-                results.citationFriendliness = await checkCitationFriendliness(url);
-                results.authority = await checkAuthority(url);
-                results.freshness = await checkFreshness(baseUrl);
-                results.technical = await checkTechnical(url);
-                results.contentFormat = await checkContentFormat(url);
-                results.licensing = await checkLicensing(baseUrl);
-                
-            } catch (error) {
-                console.error(`Error analyzing ${url}:`, error);
-                // Return empty factors if page fails
-                const emptyFactor = { value: 0, max: 10, details: ['Failed to analyze'], checks: [] };
-                return {
-                    botAccessibility: emptyFactor,
-                    parsability: emptyFactor,
-                    citationFriendliness: emptyFactor,
-                    authority: emptyFactor,
-                    freshness: emptyFactor,
-                    technical: emptyFactor,
-                    contentFormat: emptyFactor,
-                    licensing: emptyFactor
-                };
-            }
-            
-            return results;
-        }
-
-        function aggregatePageResults(pages) {
-            const aggregated = {};
-            const factorNames = [
-                'botAccessibility', 'parsability', 'citationFriendliness',
-                'authority', 'freshness', 'technical', 'contentFormat', 'licensing'
-            ];
-            
-            factorNames.forEach(factor => {
-                // Collect scores from all pages
-                const scores = pages
-                    .map(p => p.factors[factor])
-                    .filter(f => f && f.value !== undefined);
-                
-                if (scores.length > 0) {
-                    // For site-wide factors, take the MAX
-                    // For page-specific factors, take the AVERAGE
-                    const useMax = ['botAccessibility', 'licensing', 'freshness'].includes(factor);
-                    
-                    if (useMax) {
-                        // Use best score (e.g., robots.txt only needs to be set once)
-                        aggregated[factor] = scores.reduce((best, current) => 
-                            current.value > best.value ? current : best
-                        );
-                        aggregated[factor].details.push(`Best of ${scores.length} pages`);
-                    } else {
-                        // Average across pages
-                        const avgValue = Math.round(
-                            scores.reduce((sum, s) => sum + s.value, 0) / scores.length
-                        );
-                        
-                        // Combine all checks and details
-                        const allDetails = new Set();
-                        const allChecks = [];
-                        
-                        scores.forEach(score => {
-                            score.details.forEach(d => allDetails.add(d));
-                            if (score.checks && score.checks.length > 0) {
-                                score.checks.forEach(check => {
-                                    const existing = allChecks.find(c => c.name === check.name);
-                                    if (!existing) {
-                                        allChecks.push(check);
-                                    }
-                                });
-                            }
-                        });
-                        
-                        aggregated[factor] = {
-                            value: avgValue,
-                            max: scores[0].max,
-                            details: [`Averaged from ${scores.length} pages`, ...Array.from(allDetails)],
-                            checks: allChecks
-                        };
-                    }
-                }
-            });
-            
-            return aggregated;
-        }
-
-        function calculateAggregatedScore(factors) {
-            let total = 0;
-            for (const factor in factors) {
-                total += factors[factor].value || 0;
-            }
-            return Math.round(total);
-        }
-
-        function calculatePageScore(factors) {
-            let total = 0;
-            for (const factor in factors) {
-                if (factors[factor] && factors[factor].value) {
-                    total += factors[factor].value;
-                }
-            }
-            return Math.round(total);
-        }
-
-        function displayMultiPageResults(results) {
-            // Show page breakdown
-            const pageBreakdown = document.getElementById('pageBreakdown');
-            pageBreakdown.innerHTML = `
-                <div class="page-breakdown">
-                    <div class="page-summary">
-                        <h3>📊 Analyzed ${results.pageCount} Pages</h3>
-                        <div class="page-list">
-                            ${results.pages.map((page, index) => `
-                                <div class="page-item">
-                                    <span class="page-path">Page ${index + 1}: ${page.path}</span>
-                                    <span class="page-score">${calculatePageScore(page.factors)}/80</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div class="aggregation-note">
-                            Site-wide factors (robots.txt, SSL) use best score • Content factors use average score
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Update the global results for display
-            analysisResults = {
-                domain: results.domain,
-                factors: results.aggregatedFactors,
-                totalScore: results.totalScore
-            };
-            
-            // Use existing display functions
-            animateScore(results.totalScore);
-            displayFactors();
-            generateRecommendations();
-            
-            // Show results
-            document.getElementById('resultsSection').classList.add('active');
-        }
-
-        // ===== AUTO-DISCOVERY ANALYSIS =====
-        async function analyzeAuto() {
-            const domain = document.getElementById('domainAutoInput').value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
-            
-            if (!domain) {
-                showError('Please enter a domain');
-                return;
-            }
-            
-            // Reset and show loading
-            document.getElementById('resultsSection').classList.remove('active');
-            document.getElementById('errorSection').style.display = 'none';
-            document.getElementById('loadingSection').style.display = 'block';
-            
-            try {
-                const baseUrl = `https://${domain}`;
-                
-                updateProgress(10, 'Looking for sitemap...');
-                
-                // Try to get sitemap
-                const sitemapXml = await fetchWithCORS(`${baseUrl}/sitemap.xml`, 'sitemap');
-                
-                let urls = [];
-                
-                if (sitemapXml && sitemapXml.includes('<loc>')) {
-                    // Parse URLs from sitemap
-                    urls = parseSitemapUrls(sitemapXml, baseUrl);
-                    updateProgress(20, `Found ${urls.length} pages in sitemap`);
-                    
-                    // Sample key pages (max 5)
-                    urls = selectKeyPages(urls, 5);
-                    updateProgress(30, `Selected ${urls.length} key pages to analyze`);
-                } else {
-                    // No sitemap, use common pages
-                    updateProgress(20, 'No sitemap found, checking common pages...');
-                    urls = [
-                        baseUrl,
-                        `${baseUrl}/about`,
-                        `${baseUrl}/blog`,
-                        `${baseUrl}/products`,
-                        `${baseUrl}/services`
-                    ];
-                    
-                    // Check which URLs actually exist
-                    const validUrls = [];
-                    for (const url of urls) {
-                        const exists = await checkUrlExists(url);
-                        if (exists) {
-                            validUrls.push(url);
-                        }
-                    }
-                    urls = validUrls.slice(0, 5);
-                    updateProgress(30, `Found ${urls.length} pages to analyze`);
-                }
-                
-                if (urls.length === 0) {
-                    urls = [baseUrl]; // At least analyze homepage
-                }
-                
-                // Now analyze these pages
-                const allResults = {
-                    domain: domain,
-                    pages: [],
-                    aggregatedFactors: {},
-                    totalScore: 0,
-                    pageCount: urls.length
-                };
-                
-                for (let i = 0; i < urls.length; i++) {
-                    const progress = 30 + (i / urls.length) * 60;
-                    const pathname = new URL(urls[i]).pathname || '/';
-                    updateProgress(progress, `Analyzing page ${i + 1} of ${urls.length}: ${pathname}`);
-                    
-                    const pageResults = await analyzeOnePage(urls[i]);
-                    allResults.pages.push({
-                        url: urls[i],
-                        path: pathname,
-                        factors: pageResults
-                    });
-                }
-                
-                updateProgress(95, 'Combining results...');
-                
-                // Aggregate and display
-                allResults.aggregatedFactors = aggregatePageResults(allResults.pages);
-                allResults.totalScore = calculateAggregatedScore(allResults.aggregatedFactors);
-                
-                displayMultiPageResults(allResults);
-                
-            } catch (error) {
-                showError(`Auto-discovery failed: ${error.message}`);
-            } finally {
-                document.getElementById('loadingSection').style.display = 'none';
-            }
-        }
-
-        function parseSitemapUrls(xml, baseUrl) {
-            const urls = [];
-            
-            // Extract URLs from <loc> tags using regex
-            const locRegex = /<loc>(.*?)<\/loc>/g;
-            let match;
-            
-            while ((match = locRegex.exec(xml)) !== null) {
-                const url = match[1];
-                if (url && url.startsWith(baseUrl)) {
-                    urls.push(url);
-                }
-            }
-            
-            return urls;
-        }
-
-        function selectKeyPages(urls, maxCount = 5) {
-            // Prioritize important pages
-            const priorities = [
-                { pattern: /^\/?$/, weight: 10 },           // Homepage
-                { pattern: /\/about/i, weight: 9 },         // About page
-                { pattern: /\/product/i, weight: 7 },       // Products
-                { pattern: /\/service/i, weight: 7 },       // Services
-                { pattern: /\/blog\/[^\/]+$/i, weight: 6 }, // Blog posts
-                { pattern: /\/contact/i, weight: 5 },       // Contact
-                { pattern: /\/faq/i, weight: 5 }            // FAQ
-            ];
-            
-            // Score each URL
-            const scoredUrls = urls.map(url => {
-                let score = 1;
-                const path = new URL(url).pathname;
-                
-                priorities.forEach(p => {
-                    if (p.pattern.test(path)) {
-                        score = Math.max(score, p.weight);
-                    }
-                });
-                
-                return { url, score };
-            });
-            
-            // Sort by score and take top N
-            scoredUrls.sort((a, b) => b.score - a.score);
-            
-            // Always include homepage if available
-            const homepage = urls.find(u => new URL(u).pathname === '/' || new URL(u).pathname === '');
-            const selected = homepage ? [homepage] : [];
-            
-            // Add other pages
-            for (const item of scoredUrls) {
-                if (!selected.includes(item.url) && selected.length < maxCount) {
-                    selected.push(item.url);
-                }
-            }
-            
-            return selected.slice(0, maxCount);
-        }
-
-        async function checkUrlExists(url) {
-            try {
-                const response = await fetch(PROXY_BASE_URL + '?url=' + encodeURIComponent(url));
-                const data = await response.json();
-                return data.success;
-            } catch {
-                return false;
-            }
-        }
-
-        // ===== SHARED ANALYSIS FUNCTIONS =====
         async function fetchWithCORS(url, type = 'html') {
             try {
                 // Extract domain from URL if it's a full URL
@@ -1127,9 +546,8 @@
             }
         }
 
-        // [All the check functions remain the same]
         async function checkBotAccessibility(baseUrl) {
-            const score = { value: 0, max: 10, details: [], checks: [] };
+            const score = { value: 0, max: 10, details: [], checks: [], debug: [] };
             
             try {
                 // Check robots.txt
@@ -1142,9 +560,21 @@
                     score.value += 3;
                     
                     // Check for AI bot allowances
-                    const allowedBots = AI_BOTS.filter(bot => 
-                        !robotsContent.includes(`User-agent: ${bot}\nDisallow: /`)
-                    );
+                    const allowedBots = AI_BOTS.filter(bot => {
+                        // Check if bot is NOT explicitly disallowed
+                        const disallowPattern = new RegExp(`User-agent:\\s*${bot}\\s*\\nDisallow:\\s*/`, 'i');
+                        const allowPattern = new RegExp(`User-agent:\\s*${bot}\\s*\\nAllow:\\s*/`, 'i');
+                        const isDisallowed = disallowPattern.test(robotsContent);
+                        const isAllowed = allowPattern.test(robotsContent);
+                        
+                        // Also check for wildcard allowance
+                        const wildcardAllow = robotsContent.includes('User-agent: *') && 
+                                            !robotsContent.includes('Disallow: /');
+                        
+                        return isAllowed || (!isDisallowed && wildcardAllow);
+                    });
+                    
+                    score.debug.push(`Found ${allowedBots.length} allowed bots: ${allowedBots.join(', ')}`);
                     
                     if (allowedBots.length > 0) {
                         score.value += Math.min(4, allowedBots.length);
@@ -1154,8 +584,8 @@
                         score.checks.push({ name: 'AI bots allowed', status: 'fail' });
                     }
                     
-                    // Check for llms.txt
-                    if (robotsContent.includes('llms.txt')) {
+                    // Check for llms.txt reference
+                    if (robotsContent.toLowerCase().includes('llms.txt')) {
                         score.value += 2;
                         score.details.push('llms.txt reference found');
                         score.checks.push({ name: 'llms.txt configured', status: 'pass' });
@@ -1188,7 +618,7 @@
         }
 
         async function checkParsability(baseUrl) {
-            const score = { value: 0, max: 10, details: [], checks: [] };
+            const score = { value: 0, max: 10, details: [], checks: [], debug: [] };
             
             try {
                 const htmlContent = await fetchWithCORS(baseUrl);
@@ -1201,9 +631,11 @@
                     const h2Count = doc.querySelectorAll('h2').length;
                     const h3Count = doc.querySelectorAll('h3').length;
                     
+                    score.debug.push(`Found: ${h1Count} H1s, ${h2Count} H2s, ${h3Count} H3s`);
+                    
                     if (h1Count > 0) {
                         score.value += 2;
-                        score.details.push('H1 tags found');
+                        score.details.push(`${h1Count} H1 tag(s) found`);
                         score.checks.push({ name: 'H1 headings present', status: 'pass' });
                     } else {
                         score.checks.push({ name: 'H1 headings present', status: 'fail' });
@@ -1213,32 +645,52 @@
                         score.value += 3;
                         score.details.push('Hierarchical heading structure');
                         score.checks.push({ name: 'H2-H3 hierarchy', status: 'pass' });
+                    } else if (h2Count > 0) {
+                        score.value += 1;
+                        score.checks.push({ name: 'H2-H3 hierarchy', status: 'partial' });
                     } else {
-                        score.checks.push({ name: 'H2-H3 hierarchy', status: h2Count > 0 ? 'partial' : 'fail' });
+                        score.checks.push({ name: 'H2-H3 hierarchy', status: 'fail' });
                     }
                     
-                    // Check for schema markup
+                    // Check for schema markup (multiple ways)
                     const schemaScripts = doc.querySelectorAll('script[type="application/ld+json"]');
-                    if (schemaScripts.length > 0) {
+                    const microdataItems = doc.querySelectorAll('[itemscope]');
+                    const rdfa = doc.querySelectorAll('[typeof]');
+                    
+                    if (schemaScripts.length > 0 || microdataItems.length > 0 || rdfa.length > 0) {
                         score.value += 3;
-                        score.details.push('Schema.org markup found');
+                        score.details.push('Schema/structured markup found');
                         score.checks.push({ name: 'Schema.org markup', status: 'pass' });
+                        score.debug.push(`Schema: ${schemaScripts.length} JSON-LD, ${microdataItems.length} microdata, ${rdfa.length} RDFa`);
                     } else {
                         score.checks.push({ name: 'Schema.org markup', status: 'fail' });
                     }
                     
                     // Check for semantic HTML
-                    const hasArticle = doc.querySelector('article') !== null;
-                    const hasMain = doc.querySelector('main') !== null;
-                    const hasNav = doc.querySelector('nav') !== null;
+                    const semanticElements = {
+                        article: doc.querySelectorAll('article').length,
+                        main: doc.querySelectorAll('main').length,
+                        nav: doc.querySelectorAll('nav').length,
+                        section: doc.querySelectorAll('section').length,
+                        aside: doc.querySelectorAll('aside').length,
+                        header: doc.querySelectorAll('header').length,
+                        footer: doc.querySelectorAll('footer').length
+                    };
                     
-                    if (hasArticle || hasMain) {
+                    const totalSemantic = Object.values(semanticElements).reduce((a, b) => a + b, 0);
+                    
+                    if (totalSemantic >= 3) {
                         score.value += 2;
-                        score.details.push('Semantic HTML structure');
+                        score.details.push('Good semantic HTML structure');
                         score.checks.push({ name: 'Semantic HTML tags', status: 'pass' });
+                    } else if (totalSemantic >= 1) {
+                        score.value += 1;
+                        score.checks.push({ name: 'Semantic HTML tags', status: 'partial' });
                     } else {
                         score.checks.push({ name: 'Semantic HTML tags', status: 'fail' });
                     }
+                    
+                    score.debug.push(`Semantic elements: ${JSON.stringify(semanticElements)}`);
                 }
             } catch (error) {
                 score.details.push('Unable to analyze page structure');
@@ -1248,7 +700,7 @@
         }
 
         async function checkCitationFriendliness(baseUrl) {
-            const score = { value: 0, max: 10, details: [], checks: [] };
+            const score = { value: 0, max: 10, details: [], checks: [], debug: [] };
             
             try {
                 const htmlContent = await fetchWithCORS(baseUrl);
@@ -1256,24 +708,58 @@
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(htmlContent, 'text/html');
                     
-                    // Check for author information
-                    const authorMeta = doc.querySelector('meta[name="author"]');
-                    const authorSchema = htmlContent.includes('"@type":"Person"') || htmlContent.includes('"author"');
+                    // Enhanced author detection
+                    const authorChecks = [
+                        doc.querySelector('meta[name="author"]'),
+                        doc.querySelector('meta[property="article:author"]'),
+                        doc.querySelector('meta[name="dc.creator"]'),
+                        doc.querySelector('meta[property="og:author"]'),
+                        doc.querySelector('link[rel="author"]'),
+                        doc.querySelector('[rel="author"]'),
+                        doc.querySelector('.author, .by-author, .byline, .by, .written-by'),
+                        doc.querySelector('[itemprop="author"]'),
+                        doc.querySelector('address'),
+                        htmlContent.includes('"@type":"Person"'),
+                        htmlContent.includes('"author"'),
+                        htmlContent.includes('rel="author"'),
+                        htmlContent.toLowerCase().includes('written by'),
+                        htmlContent.toLowerCase().includes('author:')
+                    ];
                     
-                    if (authorMeta || authorSchema) {
+                    const hasAuthor = authorChecks.some(check => check);
+                    
+                    if (hasAuthor) {
                         score.value += 3;
                         score.details.push('Author information present');
                         score.checks.push({ name: 'Author attribution', status: 'pass' });
+                        score.debug.push('Author signals found');
                     } else {
                         score.checks.push({ name: 'Author attribution', status: 'fail' });
+                        score.debug.push('No author signals detected');
                     }
                     
-                    // Check for dates
-                    const dateMeta = doc.querySelector('meta[property="article:published_time"], meta[name="publish_date"], time');
-                    if (dateMeta) {
+                    // Enhanced date detection
+                    const dateChecks = [
+                        doc.querySelector('meta[property="article:published_time"]'),
+                        doc.querySelector('meta[property="article:modified_time"]'),
+                        doc.querySelector('meta[name="publish_date"]'),
+                        doc.querySelector('meta[name="date"]'),
+                        doc.querySelector('meta[name="DC.date"]'),
+                        doc.querySelector('time'),
+                        doc.querySelector('.date, .publish-date, .published, .post-date'),
+                        doc.querySelector('[itemprop="datePublished"]'),
+                        doc.querySelector('[itemprop="dateModified"]'),
+                        htmlContent.includes('datePublished'),
+                        htmlContent.includes('dateModified')
+                    ];
+                    
+                    const hasDate = dateChecks.some(check => check);
+                    
+                    if (hasDate) {
                         score.value += 2;
                         score.details.push('Publication dates found');
                         score.checks.push({ name: 'Date information', status: 'pass' });
+                        score.debug.push('Date signals found');
                     } else {
                         score.checks.push({ name: 'Date information', status: 'fail' });
                     }
@@ -1281,12 +767,19 @@
                     // Check for structured paragraphs
                     const paragraphs = doc.querySelectorAll('p');
                     let wellStructured = 0;
+                    let totalParagraphs = 0;
+                    
                     paragraphs.forEach(p => {
                         const text = p.textContent.trim();
-                        if (text.length > 40 && text.length < 200) {
-                            wellStructured++;
+                        if (text.length > 10) {
+                            totalParagraphs++;
+                            if (text.length > 40 && text.length < 200) {
+                                wellStructured++;
+                            }
                         }
                     });
+                    
+                    score.debug.push(`Paragraphs: ${wellStructured}/${totalParagraphs} well-structured`);
                     
                     if (wellStructured > 5) {
                         score.value += 3;
@@ -1301,12 +794,26 @@
                     
                     // Check for internal/external links
                     const links = doc.querySelectorAll('a[href]');
+                    const internalLinks = Array.from(links).filter(a => {
+                        const href = a.getAttribute('href');
+                        return href && (href.startsWith('/') || href.includes(baseUrl));
+                    });
+                    const externalLinks = Array.from(links).filter(a => {
+                        const href = a.getAttribute('href');
+                        return href && href.startsWith('http') && !href.includes(baseUrl);
+                    });
+                    
+                    score.debug.push(`Links: ${internalLinks.length} internal, ${externalLinks.length} external`);
+                    
                     if (links.length > 10) {
                         score.value += 2;
-                        score.details.push('Good link structure');
+                        score.details.push(`Good link structure (${links.length} links)`);
                         score.checks.push({ name: 'Link citations', status: 'pass' });
+                    } else if (links.length > 5) {
+                        score.value += 1;
+                        score.checks.push({ name: 'Link citations', status: 'partial' });
                     } else {
-                        score.checks.push({ name: 'Link citations', status: links.length > 5 ? 'partial' : 'fail' });
+                        score.checks.push({ name: 'Link citations', status: 'fail' });
                     }
                 }
             } catch (error) {
@@ -1317,7 +824,7 @@
         }
 
         async function checkAuthority(baseUrl) {
-            const score = { value: 0, max: 10, details: [], checks: [] };
+            const score = { value: 0, max: 10, details: [], checks: [], debug: [] };
             
             try {
                 const htmlContent = await fetchWithCORS(baseUrl);
@@ -1325,36 +832,64 @@
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(htmlContent, 'text/html');
                     
-                    // Check for About page
-                    const aboutLink = doc.querySelector('a[href*="about"], a[href*="About"]');
-                    if (aboutLink) {
+                    // Enhanced About page detection
+                    const aboutSignals = [
+                        doc.querySelector('a[href*="about"]'),
+                        doc.querySelector('a[href*="About"]'),
+                        doc.querySelector('a[href*="/team"]'),
+                        doc.querySelector('a[href*="/company"]'),
+                        doc.querySelector('a[href*="/who-we-are"]'),
+                        htmlContent.toLowerCase().includes('about us'),
+                        htmlContent.toLowerCase().includes('about our')
+                    ];
+                    
+                    if (aboutSignals.some(signal => signal)) {
                         score.value += 3;
-                        score.details.push('About page found');
+                        score.details.push('About/Company info found');
                         score.checks.push({ name: 'About page', status: 'pass' });
                     } else {
                         score.checks.push({ name: 'About page', status: 'fail' });
                     }
                     
-                    // Check for Contact page
-                    const contactLink = doc.querySelector('a[href*="contact"], a[href*="Contact"]');
-                    if (contactLink) {
+                    // Enhanced Contact detection
+                    const contactSignals = [
+                        doc.querySelector('a[href*="contact"]'),
+                        doc.querySelector('a[href*="Contact"]'),
+                        doc.querySelector('a[href^="mailto:"]'),
+                        doc.querySelector('a[href^="tel:"]'),
+                        doc.querySelector('address'),
+                        htmlContent.includes('@') && htmlContent.includes('.com'),
+                        htmlContent.toLowerCase().includes('contact us'),
+                        htmlContent.toLowerCase().includes('get in touch')
+                    ];
+                    
+                    if (contactSignals.some(signal => signal)) {
                         score.value += 3;
-                        score.details.push('Contact page found');
+                        score.details.push('Contact information found');
                         score.checks.push({ name: 'Contact page', status: 'pass' });
                     } else {
                         score.checks.push({ name: 'Contact page', status: 'fail' });
                     }
                     
-                    // Check for social proof / trust signals
-                    const trustSignals = htmlContent.includes('testimonial') || 
-                                       htmlContent.includes('review') || 
-                                       htmlContent.includes('trusted by') ||
-                                       htmlContent.includes('partner');
+                    // Enhanced trust signals
+                    const trustKeywords = [
+                        'testimonial', 'review', 'trusted by', 'partner', 
+                        'certified', 'accredited', 'award', 'featured in',
+                        'as seen on', 'client', 'customer', 'guarantee',
+                        'secure', 'verified', 'authorized'
+                    ];
                     
-                    if (trustSignals) {
+                    const trustSignals = trustKeywords.filter(keyword => 
+                        htmlContent.toLowerCase().includes(keyword)
+                    );
+                    
+                    if (trustSignals.length > 2) {
                         score.value += 2;
-                        score.details.push('Trust signals present');
+                        score.details.push(`Trust signals present (${trustSignals.join(', ')})`);
                         score.checks.push({ name: 'Trust indicators', status: 'pass' });
+                    } else if (trustSignals.length > 0) {
+                        score.value += 1;
+                        score.checks.push({ name: 'Trust indicators', status: 'partial' });
                     } else {
                         score.checks.push({ name: 'Trust indicators', status: 'fail' });
                     }
@@ -1367,6 +902,8 @@
                     } else {
                         score.checks.push({ name: 'SSL/HTTPS', status: 'fail' });
                     }
+                    
+                    score.debug.push(`Trust signals found: ${trustSignals.length}`);
                 }
             } catch (error) {
                 score.details.push('Unable to check authority signals');
@@ -1376,20 +913,34 @@
         }
 
         async function checkFreshness(baseUrl) {
-            const score = { value: 0, max: 10, details: [], checks: [] };
+            const score = { value: 0, max: 10, details: [], checks: [], debug: [] };
             
             try {
                 // Check for sitemap
-                const sitemapUrl = `${baseUrl}/sitemap.xml`;
-                const sitemapContent = await fetchWithCORS(sitemapUrl);
+                const sitemapUrls = [
+                    `${baseUrl}/sitemap.xml`,
+                    `${baseUrl}/sitemap_index.xml`,
+                    `${baseUrl}/sitemap`
+                ];
                 
-                if (sitemapContent) {
+                let sitemapFound = false;
+                let sitemapContent = null;
+                
+                for (const sitemapUrl of sitemapUrls) {
+                    sitemapContent = await fetchWithCORS(sitemapUrl);
+                    if (sitemapContent) {
+                        sitemapFound = true;
+                        break;
+                    }
+                }
+                
+                if (sitemapFound && sitemapContent) {
                     score.value += 3;
                     score.details.push('XML sitemap found');
                     score.checks.push({ name: 'XML sitemap', status: 'pass' });
                     
                     // Check for lastmod dates
-                    if (sitemapContent.includes('<lastmod>')) {
+                    if (sitemapContent.includes('<lastmod>') || sitemapContent.includes('lastmod')) {
                         score.value += 2;
                         score.details.push('Sitemap includes update dates');
                         score.checks.push({ name: 'Lastmod dates', status: 'pass' });
@@ -1401,14 +952,23 @@
                     score.checks.push({ name: 'Lastmod dates', status: 'fail' });
                 }
                 
-                // Check for RSS feed
+                // Check for RSS/Atom feed
                 const htmlContent = await fetchWithCORS(baseUrl);
                 if (htmlContent) {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(htmlContent, 'text/html');
                     
-                    const rssFeed = doc.querySelector('link[type="application/rss+xml"], link[type="application/atom+xml"]');
-                    if (rssFeed) {
+                    const feedLinks = [
+                        doc.querySelector('link[type="application/rss+xml"]'),
+                        doc.querySelector('link[type="application/atom+xml"]'),
+                        doc.querySelector('link[type="application/feed+json"]'),
+                        doc.querySelector('a[href*="/feed"]'),
+                        doc.querySelector('a[href*="/rss"]'),
+                        doc.querySelector('a[href*=".rss"]'),
+                        doc.querySelector('a[href*="/atom"]')
+                    ];
+                    
+                    if (feedLinks.some(link => link)) {
                         score.value += 3;
                         score.details.push('RSS/Atom feed available');
                         score.checks.push({ name: 'RSS/JSON feed', status: 'pass' });
@@ -1418,10 +978,26 @@
                     
                     // Check for recent content indicators
                     const currentYear = new Date().getFullYear();
-                    if (htmlContent.includes(currentYear.toString())) {
+                    const recentYears = [currentYear, currentYear - 1];
+                    
+                    const hasRecentContent = recentYears.some(year => 
+                        htmlContent.includes(year.toString())
+                    );
+                    
+                    if (hasRecentContent) {
                         score.value += 2;
-                        score.details.push('Current year content found');
+                        score.details.push('Recent content found');
                         score.checks.push({ name: 'Recent content', status: 'pass' });
+                        
+                        // Check for specific months for extra freshness
+                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                      'July', 'August', 'September', 'October', 'November', 'December'];
+                        const currentMonth = new Date().getMonth();
+                        const recentMonths = months.slice(Math.max(0, currentMonth - 2), currentMonth + 1);
+                        
+                        if (recentMonths.some(month => htmlContent.includes(month))) {
+                            score.debug.push('Very recent content (within 3 months)');
+                        }
                     } else {
                         score.checks.push({ name: 'Recent content', status: 'fail' });
                     }
@@ -1434,7 +1010,7 @@
         }
 
         async function checkTechnical(baseUrl) {
-            const score = { value: 0, max: 10, details: [], checks: [] };
+            const score = { value: 0, max: 10, details: [], checks: [], debug: [] };
             
             try {
                 const htmlContent = await fetchWithCORS(baseUrl);
@@ -1443,44 +1019,77 @@
                     const doc = parser.parseFromString(htmlContent, 'text/html');
                     
                     // Check for semantic HTML5 elements
-                    const hasArticle = doc.querySelector('article') !== null;
-                    const hasHeader = doc.querySelector('header') !== null;
-                    const hasFooter = doc.querySelector('footer') !== null;
-                    const hasMain = doc.querySelector('main') !== null;
+                    const semanticElements = {
+                        article: doc.querySelectorAll('article').length,
+                        header: doc.querySelectorAll('header').length,
+                        footer: doc.querySelectorAll('footer').length,
+                        main: doc.querySelectorAll('main').length,
+                        section: doc.querySelectorAll('section').length,
+                        nav: doc.querySelectorAll('nav').length,
+                        aside: doc.querySelectorAll('aside').length
+                    };
                     
-                    const semanticScore = [hasArticle, hasHeader, hasFooter, hasMain].filter(Boolean).length;
-                    if (semanticScore >= 3) {
+                    const semanticScore = Object.values(semanticElements).filter(count => count > 0).length;
+                    
+                    if (semanticScore >= 4) {
                         score.value += 4;
-                        score.details.push('Clean HTML structure');
+                        score.details.push('Excellent HTML5 structure');
                         score.checks.push({ name: 'HTML5 structure', status: 'pass' });
                     } else if (semanticScore >= 2) {
                         score.value += 2;
+                        score.details.push('Basic HTML5 structure');
                         score.checks.push({ name: 'HTML5 structure', status: 'partial' });
                     } else {
                         score.checks.push({ name: 'HTML5 structure', status: 'fail' });
                     }
                     
+                    score.debug.push(`Semantic elements: ${JSON.stringify(semanticElements)}`);
+                    
                     // Check for alt text on images
                     const images = doc.querySelectorAll('img');
                     const imagesWithAlt = doc.querySelectorAll('img[alt]');
+                    const imagesWithGoodAlt = Array.from(imagesWithAlt).filter(img => {
+                        const alt = img.getAttribute('alt');
+                        return alt && alt.trim().length > 3 && !alt.toLowerCase().includes('image');
+                    });
                     
-                    if (images.length > 0 && imagesWithAlt.length / images.length > 0.8) {
-                        score.value += 3;
-                        score.details.push('Good alt text coverage');
-                        score.checks.push({ name: 'Image alt text', status: 'pass' });
-                    } else if (images.length > 0 && imagesWithAlt.length / images.length > 0.5) {
-                        score.value += 1;
-                        score.checks.push({ name: 'Image alt text', status: 'partial' });
+                    if (images.length > 0) {
+                        const altCoverage = imagesWithAlt.length / images.length;
+                        const goodAltCoverage = imagesWithGoodAlt.length / images.length;
+                        
+                        if (goodAltCoverage > 0.7) {
+                            score.value += 3;
+                            score.details.push('Excellent alt text coverage');
+                            score.checks.push({ name: 'Image alt text', status: 'pass' });
+                        } else if (altCoverage > 0.5) {
+                            score.value += 1;
+                            score.details.push('Partial alt text coverage');
+                            score.checks.push({ name: 'Image alt text', status: 'partial' });
+                        } else {
+                            score.checks.push({ name: 'Image alt text', status: 'fail' });
+                        }
+                        
+                        score.debug.push(`Images: ${images.length} total, ${imagesWithAlt.length} with alt, ${imagesWithGoodAlt.length} with good alt`);
                     } else {
-                        score.checks.push({ name: 'Image alt text', status: 'fail' });
+                        // No images, so not penalized
+                        score.value += 1;
+                        score.details.push('No images to check');
+                        score.checks.push({ name: 'Image alt text', status: 'pass' });
                     }
                     
-                    // Check mobile viewport
+                    // Check mobile viewport and responsive design
                     const viewport = doc.querySelector('meta[name="viewport"]');
+                    const hasResponsiveImages = doc.querySelector('img[srcset], picture');
+                    const hasMediaQueries = htmlContent.includes('@media');
+                    
                     if (viewport) {
                         score.value += 3;
                         score.details.push('Mobile-optimized');
                         score.checks.push({ name: 'Mobile ready', status: 'pass' });
+                        
+                        if (hasResponsiveImages || hasMediaQueries) {
+                            score.debug.push('Advanced responsive features detected');
+                        }
                     } else {
                         score.checks.push({ name: 'Mobile ready', status: 'fail' });
                     }
@@ -1493,7 +1102,7 @@
         }
 
         async function checkContentFormat(baseUrl) {
-            const score = { value: 0, max: 10, details: [], checks: [] };
+            const score = { value: 0, max: 10, details: [], checks: [], debug: [] };
             
             try {
                 const htmlContent = await fetchWithCORS(baseUrl);
@@ -1501,15 +1110,26 @@
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(htmlContent, 'text/html');
                     
-                    // Check for FAQ sections
-                    const hasFAQ = htmlContent.toLowerCase().includes('faq') || 
-                                  htmlContent.includes('frequently asked') ||
-                                  htmlContent.includes('"@type":"FAQPage"');
+                    // Enhanced FAQ detection
+                    const faqSignals = [
+                        htmlContent.toLowerCase().includes('frequently asked'),
+                        htmlContent.toLowerCase().includes('faq'),
+                        htmlContent.includes('"@type":"FAQPage"'),
+                        htmlContent.includes('"@type":"Question"'),
+                        doc.querySelector('.faq, #faq, [class*="faq"], [id*="faq"]'),
+                        doc.querySelector('dl'), // Definition lists often used for FAQs
+                        Array.from(doc.querySelectorAll('h2, h3, h4')).some(h => 
+                            h.textContent.toLowerCase().includes('?')
+                        )
+                    ];
                     
-                    if (hasFAQ) {
+                    if (faqSignals.filter(signal => signal).length >= 2) {
                         score.value += 3;
-                        score.details.push('FAQ section found');
+                        score.details.push('FAQ/Q&A content found');
                         score.checks.push({ name: 'FAQ content', status: 'pass' });
+                    } else if (faqSignals.some(signal => signal)) {
+                        score.value += 1;
+                        score.checks.push({ name: 'FAQ content', status: 'partial' });
                     } else {
                         score.checks.push({ name: 'FAQ content', status: 'fail' });
                     }
@@ -1517,24 +1137,36 @@
                     // Check for lists and tables
                     const lists = doc.querySelectorAll('ul, ol');
                     const tables = doc.querySelectorAll('table');
+                    const definitionLists = doc.querySelectorAll('dl');
                     
-                    if (lists.length > 2 || tables.length > 0) {
+                    const structuredContent = lists.length + tables.length + definitionLists.length;
+                    
+                    if (structuredContent > 5) {
                         score.value += 3;
-                        score.details.push('Structured content formats');
+                        score.details.push(`Rich structured content (${structuredContent} elements)`);
                         score.checks.push({ name: 'Lists/Tables', status: 'pass' });
-                    } else if (lists.length > 0) {
+                    } else if (structuredContent > 2) {
                         score.value += 1;
                         score.checks.push({ name: 'Lists/Tables', status: 'partial' });
                     } else {
                         score.checks.push({ name: 'Lists/Tables', status: 'fail' });
                     }
                     
-                    // Check for definitions or glossary
-                    const hasDefinitions = doc.querySelector('dl') !== null ||
-                                         htmlContent.includes('definition') ||
-                                         htmlContent.includes('glossary');
+                    score.debug.push(`Structured content: ${lists.length} lists, ${tables.length} tables, ${definitionLists.length} dl`);
                     
-                    if (hasDefinitions) {
+                    // Check for definitions or glossary
+                    const definitionSignals = [
+                        doc.querySelector('dl'),
+                        doc.querySelector('[class*="glossary"], [id*="glossary"]'),
+                        doc.querySelector('[class*="definition"], [id*="definition"]'),
+                        doc.querySelector('[class*="dictionary"], [id*="dictionary"]'),
+                        htmlContent.toLowerCase().includes('definition'),
+                        htmlContent.toLowerCase().includes('glossary'),
+                        htmlContent.toLowerCase().includes('means that'),
+                        htmlContent.toLowerCase().includes('refers to')
+                    ];
+                    
+                    if (definitionSignals.filter(signal => signal).length >= 2) {
                         score.value += 2;
                         score.details.push('Definitions/glossary present');
                         score.checks.push({ name: 'Definitions', status: 'pass' });
@@ -1543,17 +1175,24 @@
                     }
                     
                     // Check content depth
-                    const wordCount = doc.body ? doc.body.textContent.split(/\s+/).length : 0;
+                    const textContent = doc.body ? doc.body.textContent : '';
+                    const words = textContent.split(/\s+/).filter(word => word.length > 2);
+                    const wordCount = words.length;
+                    
                     if (wordCount > 1000) {
                         score.value += 2;
-                        score.details.push('Comprehensive content');
+                        score.details.push(`Comprehensive content (${wordCount}+ words)`);
                         score.checks.push({ name: 'Content depth', status: 'pass' });
                     } else if (wordCount > 500) {
                         score.value += 1;
+                        score.details.push(`Moderate content (${wordCount} words)`);
                         score.checks.push({ name: 'Content depth', status: 'partial' });
                     } else {
+                        score.details.push(`Thin content (${wordCount} words)`);
                         score.checks.push({ name: 'Content depth', status: 'fail' });
                     }
+                    
+                    score.debug.push(`Word count: ${wordCount}`);
                 }
             } catch (error) {
                 score.details.push('Unable to check content formats');
@@ -1563,7 +1202,7 @@
         }
 
         async function checkLicensing(baseUrl) {
-            const score = { value: 0, max: 10, details: [], checks: [] };
+            const score = { value: 0, max: 10, details: [], checks: [], debug: [] };
             
             try {
                 // Check robots.txt for differentiation
@@ -1572,22 +1211,32 @@
                 
                 if (robotsContent) {
                     // Check for training vs retrieval bot differentiation
-                    const hasGPTBot = robotsContent.includes('GPTBot');
-                    const hasSearchBot = robotsContent.includes('OAI-SearchBot') || robotsContent.includes('ChatGPT-User');
+                    const bots = {
+                        training: ['GPTBot', 'CCBot', 'ChatGPT-User', 'Claude-Web'],
+                        search: ['OAI-SearchBot', 'ChatGPT-User', 'PerplexityBot', 'YouBot']
+                    };
                     
-                    if (hasGPTBot && hasSearchBot) {
+                    const hasTrainingBots = bots.training.some(bot => 
+                        robotsContent.includes(bot)
+                    );
+                    const hasSearchBots = bots.search.some(bot => 
+                        robotsContent.includes(bot)
+                    );
+                    
+                    if (hasTrainingBots && hasSearchBots) {
                         score.value += 4;
                         score.details.push('Differentiates bot types');
                         score.checks.push({ name: 'Bot differentiation', status: 'pass' });
-                    } else if (hasGPTBot || hasSearchBot) {
+                    } else if (hasTrainingBots || hasSearchBots) {
                         score.value += 2;
+                        score.details.push('Some bot differentiation');
                         score.checks.push({ name: 'Bot differentiation', status: 'partial' });
                     } else {
                         score.checks.push({ name: 'Bot differentiation', status: 'fail' });
                     }
                     
                     // Check for llms.txt
-                    if (robotsContent.includes('llms.txt')) {
+                    if (robotsContent.toLowerCase().includes('llms.txt')) {
                         score.value += 3;
                         score.details.push('llms.txt configured');
                         score.checks.push({ name: 'llms.txt policy', status: 'pass' });
@@ -1599,17 +1248,33 @@
                 // Check for terms/license page
                 const htmlContent = await fetchWithCORS(baseUrl);
                 if (htmlContent) {
-                    const hasTerms = htmlContent.includes('terms') || 
-                                   htmlContent.includes('license') ||
-                                   htmlContent.includes('copyright');
+                    const licenseSignals = [
+                        htmlContent.toLowerCase().includes('terms of service'),
+                        htmlContent.toLowerCase().includes('terms of use'),
+                        htmlContent.toLowerCase().includes('terms and conditions'),
+                        htmlContent.toLowerCase().includes('license'),
+                        htmlContent.toLowerCase().includes('copyright'),
+                        htmlContent.toLowerCase().includes('creative commons'),
+                        htmlContent.toLowerCase().includes('privacy policy'),
+                        htmlContent.includes('©'),
+                        htmlContent.includes('&copy;')
+                    ];
                     
-                    if (hasTerms) {
+                    const licenseCount = licenseSignals.filter(signal => signal).length;
+                    
+                    if (licenseCount >= 3) {
                         score.value += 3;
-                        score.details.push('License/terms present');
+                        score.details.push('Strong license/terms presence');
                         score.checks.push({ name: 'Terms/License', status: 'pass' });
+                    } else if (licenseCount >= 1) {
+                        score.value += 1;
+                        score.details.push('Basic license/terms present');
+                        score.checks.push({ name: 'Terms/License', status: 'partial' });
                     } else {
                         score.checks.push({ name: 'Terms/License', status: 'fail' });
                     }
+                    
+                    score.debug.push(`License signals: ${licenseCount}`);
                 }
             } catch (error) {
                 score.details.push('Unable to check licensing');
@@ -1618,14 +1283,14 @@
             return score;
         }
 
-        // [Display functions remain the same]
         function updateProgress(percent, message) {
             const progressBar = document.getElementById('progressBar');
             progressBar.style.width = percent + '%';
             progressBar.textContent = percent + '%';
             
-            const loadingMessage = document.getElementById('loadingMessage');
-            loadingMessage.textContent = message;
+            const loadingSection = document.getElementById('loadingSection');
+            const statusText = loadingSection.querySelector('p');
+            statusText.textContent = message;
         }
 
         function calculateTotalScore() {
@@ -1645,8 +1310,8 @@
             // Display factor cards
             displayFactors();
             
-            // Generate recommendations
-            generateRecommendations();
+            // Generate ALL recommendations
+            generateAllRecommendations();
             
             // Show results
             resultsSection.classList.add('active');
@@ -1718,6 +1383,11 @@
             const scoreColor = factor.value >= 8 ? '#4caf50' : 
                              factor.value >= 5 ? '#ff9800' : '#f44336';
             
+            // Include debug info if available
+            const debugInfo = factor.debug && factor.debug.length > 0 
+                ? `<div class="debug-info">Debug: ${factor.debug.join(' | ')}</div>` 
+                : '';
+            
             card.innerHTML = `
                 <div class="factor-header">
                     <div class="factor-title">${name}</div>
@@ -1734,142 +1404,228 @@
                         </li>
                     `).join('')}
                 </ul>
+                ${debugInfo}
             `;
             
             return card;
         }
 
-        function generateRecommendations() {
+        function generateAllRecommendations() {
             const recommendations = document.getElementById('recommendations');
-            const recs = [];
             
-            // Analyze weak points and generate recommendations
-            for (const [key, factor] of Object.entries(analysisResults.factors)) {
-                if (factor.value < 6) {
-                    recs.push(getRecommendation(key, factor));
+            const factorInfo = {
+                botAccessibility: {
+                    name: 'Bot Accessibility',
+                    explanation: 'AI assistants need permission to access and read your website. Without proper bot access, ChatGPT, Claude, and other AI tools cannot discover or reference your content.',
+                    whyImportant: 'If AI bots cannot access your site, your content will never appear in AI-generated responses, missing a growing source of traffic and visibility.'
+                },
+                parsability: {
+                    name: 'Parsability & Structure',
+                    explanation: 'AI systems need clear, semantic HTML structure to understand your content hierarchy and meaning. This includes proper headings, schema markup, and semantic HTML5 tags.',
+                    whyImportant: 'Well-structured content helps AI understand what your page is about, making it more likely to be cited accurately in relevant queries.'
+                },
+                citationFriendliness: {
+                    name: 'Citation Friendliness',
+                    explanation: 'AI systems prefer content they can easily quote and attribute. This includes clear authorship, dates, and bite-sized information chunks.',
+                    whyImportant: 'Citation-friendly content is more likely to be quoted verbatim in AI responses, with proper attribution driving traffic back to your site.'
+                },
+                authority: {
+                    name: 'Authority & Trust',
+                    explanation: 'AI systems evaluate trustworthiness through signals like SSL certificates, contact information, about pages, and social proof.',
+                    whyImportant: 'AI prioritizes authoritative sources to ensure accuracy. Higher trust signals mean your content is more likely to be selected over competitors.'
+                },
+                freshness: {
+                    name: 'Freshness & Feeds',
+                    explanation: 'AI systems need to know when content was published and updated. Sitemaps, RSS feeds, and date stamps help AI identify current information.',
+                    whyImportant: 'For time-sensitive queries, AI will prefer sources with clear recency signals. Outdated-looking content gets ignored.'
+                },
+                technical: {
+                    name: 'Technical Signals',
+                    explanation: 'Technical optimization ensures AI can efficiently process your site. This includes semantic HTML5, proper alt text, and mobile optimization.',
+                    whyImportant: 'Technical issues can prevent AI from properly parsing your content, even if the information is valuable.'
+                },
+                contentFormat: {
+                    name: 'Content Format & Coverage',
+                    explanation: 'AI systems prefer certain content formats like FAQs, lists, tables, and comprehensive coverage of topics.',
+                    whyImportant: 'Well-formatted content is easier for AI to extract and present to users. FAQ sections are particularly valuable for question-based queries.'
+                },
+                licensing: {
+                    name: 'Licensing & Policy Readiness',
+                    explanation: 'Clear licensing and bot policies tell AI systems how they can use your content. This includes robots.txt differentiation and terms of service.',
+                    whyImportant: 'As AI companies establish content partnerships, sites with clear licensing policies will have advantages in visibility and potential revenue.'
                 }
+            };
+            
+            // Build comprehensive recommendations HTML
+            let html = '<h2>📋 Complete Analysis & Recommendations</h2>';
+            
+            // Add all factors with their recommendations
+            for (const [key, factor] of Object.entries(analysisResults.factors)) {
+                const info = factorInfo[key];
+                const score = factor.value;
+                const maxScore = factor.max;
+                const percentage = Math.round((score / maxScore) * 100);
+                
+                // Determine priority
+                let priority = 'low';
+                let priorityText = 'Low Priority';
+                if (percentage < 40) {
+                    priority = 'high';
+                    priorityText = 'High Priority - Fix Soon';
+                } else if (percentage < 70) {
+                    priority = 'medium';
+                    priorityText = 'Medium Priority';
+                }
+                
+                // Get specific recommendations for this factor
+                const rec = getRecommendation(key, factor);
+                
+                html += `
+                    <div class="factor-section">
+                        <h3>
+                            ${info.name}
+                            <span style="font-size: 1rem; color: ${percentage >= 70 ? '#4caf50' : percentage >= 40 ? '#ff9800' : '#f44336'}">
+                                ${score}/${maxScore} (${percentage}%)
+                            </span>
+                        </h3>
+                        
+                        <div class="factor-explanation">
+                            <strong>What this measures:</strong> ${info.explanation}
+                            <br><br>
+                            <strong>Why it matters:</strong> ${info.whyImportant}
+                        </div>
+                        
+                        <div class="recommendation-item">
+                            <span class="recommendation-priority priority-${priority}">${priorityText}</span>
+                            <div class="recommendation-title">${rec.title}</div>
+                            <p>${rec.description}</p>
+                            <ol class="recommendation-steps">
+                                ${rec.steps.map(step => `<li>${step}</li>`).join('')}
+                            </ol>
+                        </div>
+                    </div>
+                `;
             }
             
-            // Sort by priority (lowest scores first)
-            recs.sort((a, b) => a.score - b.score);
-            
-            // Take top 3
-            const topRecs = recs.slice(0, 3);
-            
-            recommendations.innerHTML = `
-                <h2>📋 Top Recommendations</h2>
-                ${topRecs.map((rec, index) => `
-                    <div class="recommendation-item">
-                        <span class="recommendation-priority">Priority ${index + 1}</span>
-                        <div class="recommendation-title">${rec.title}</div>
-                        <p>${rec.description}</p>
-                        <ol class="recommendation-steps">
-                            ${rec.steps.map(step => `<li>${step}</li>`).join('')}
-                        </ol>
-                    </div>
-                `).join('')}
-            `;
+            recommendations.innerHTML = html;
         }
 
         function getRecommendation(factorKey, factor) {
             const recommendations = {
                 botAccessibility: {
-                    title: 'Improve Bot Accessibility',
-                    description: 'AI bots cannot properly access your site. This is critical for LLM visibility.',
+                    title: 'Optimize Bot Accessibility',
+                    description: 'Ensure AI bots can discover and access your content.',
                     steps: [
-                        'Create or update robots.txt file in your root directory',
-                        'Add these lines: User-agent: GPTBot\\nAllow: /',
-                        'Add similar entries for ClaudeBot, OAI-SearchBot, and PerplexityBot',
-                        'Create an llms.txt file listing your best content URLs',
-                        'Test accessibility at robotstxt.com'
+                        'Create or update your robots.txt file in the root directory',
+                        'Add specific allow rules for AI bots: GPTBot, ClaudeBot, ChatGPT-User, OAI-SearchBot, PerplexityBot',
+                        'Create an llms.txt file highlighting your best content for AI systems',
+                        'Consider differentiating between training bots (GPTBot) and retrieval bots (OAI-SearchBot)',
+                        'Test your robots.txt at Google\'s robots.txt tester',
+                        'Monitor server logs to verify AI bots are visiting your site'
                     ]
                 },
                 parsability: {
-                    title: 'Enhance Content Structure',
-                    description: 'Your content structure needs improvement for AI understanding.',
+                    title: 'Improve Content Structure',
+                    description: 'Make your content easily understandable for AI parsers.',
                     steps: [
-                        'Add clear H1 tags to all main pages (one per page)',
-                        'Use H2 and H3 tags to create content hierarchy',
-                        'Implement Schema.org markup using JSON-LD format',
-                        'Add semantic HTML5 tags: <article>, <main>, <section>',
-                        'Validate markup at schema.org/docs/validator'
+                        'Add one clear H1 tag per page describing the main topic',
+                        'Create logical heading hierarchy (H1 → H2 → H3) for content sections',
+                        'Implement Schema.org JSON-LD markup for your content type',
+                        'Use semantic HTML5 tags: <article>, <main>, <section>, <nav>, <aside>',
+                        'Add structured data for articles, FAQs, or products as appropriate',
+                        'Validate your schema markup using Google\'s Rich Results Test',
+                        'Ensure your HTML validates at validator.w3.org'
                     ]
                 },
                 citationFriendliness: {
-                    title: 'Make Content More Citable',
-                    description: 'Your content is difficult for AI to quote and reference.',
+                    title: 'Enhance Citation Potential',
+                    description: 'Make your content easy for AI to quote and attribute.',
                     steps: [
-                        'Add author names to all content pieces',
-                        'Include publication and update dates prominently',
-                        'Break long content into 40-120 word paragraphs',
-                        'Add internal links to related content',
-                        'Include meta author and date tags in HTML head'
+                        'Add author meta tags: <meta name="author" content="Name">',
+                        'Include publication and update dates in both visible text and meta tags',
+                        'Break content into concise 40-120 word paragraphs with clear points',
+                        'Add bylines with author credentials and expertise',
+                        'Include both internal links (to related content) and external citations',
+                        'Use <time> tags for dates with datetime attributes',
+                        'Add Schema.org Article markup with author and date information'
                     ]
                 },
                 authority: {
                     title: 'Build Trust Signals',
-                    description: 'Your site lacks authority indicators that AI systems look for.',
+                    description: 'Establish your site as a trustworthy source for AI systems.',
                     steps: [
-                        'Create comprehensive About and Contact pages',
-                        'Add author bios with credentials to content',
-                        'Display testimonials, reviews, or case studies',
-                        'Ensure HTTPS is enabled site-wide',
-                        'Add trust badges and certifications if applicable'
+                        'Create comprehensive About and Team pages with credentials',
+                        'Add clear Contact page with multiple contact methods',
+                        'Ensure HTTPS is enabled across your entire site',
+                        'Display testimonials, reviews, or case studies prominently',
+                        'List partnerships, certifications, or awards',
+                        'Add author bio boxes to content with expertise indicators',
+                        'Include privacy policy and terms of service pages',
+                        'Register with Google Business Profile if applicable'
                     ]
                 },
                 freshness: {
-                    title: 'Show Content Freshness',
-                    description: 'AI cannot determine if your content is current.',
+                    title: 'Signal Content Freshness',
+                    description: 'Help AI systems identify your most current content.',
                     steps: [
-                        'Create and submit XML sitemap with lastmod dates',
-                        'Add RSS or Atom feed for new content',
-                        'Display "Last Updated" dates on all pages',
-                        'Update content regularly (at least monthly)',
-                        'Include current year references in content'
+                        'Create and submit XML sitemap with <lastmod> dates',
+                        'Implement RSS or Atom feed for new content',
+                        'Display "Published" and "Last Updated" dates visibly on pages',
+                        'Use Schema.org datePublished and dateModified properties',
+                        'Update content regularly with current information',
+                        'Include current year in footers and relevant content',
+                        'Submit sitemap to Google Search Console and Bing Webmaster Tools',
+                        'Consider implementing a "Recent Updates" section'
                     ]
                 },
                 technical: {
-                    title: 'Fix Technical Issues',
-                    description: 'Technical problems make your site hard for AI to process.',
+                    title: 'Optimize Technical Implementation',
+                    description: 'Ensure technical excellence for AI processing.',
                     steps: [
-                        'Add alt text to all images describing their content',
-                        'Implement proper HTML5 semantic structure',
-                        'Add viewport meta tag for mobile optimization',
-                        'Use semantic tags: <header>, <main>, <article>, <footer>',
-                        'Validate HTML at validator.w3.org'
+                        'Implement semantic HTML5 structure: <header>, <main>, <footer>, <article>',
+                        'Add descriptive alt text to all images (not just "image")',
+                        'Include viewport meta tag for mobile optimization',
+                        'Use responsive images with srcset attributes',
+                        'Implement structured data breadcrumbs for navigation',
+                        'Ensure proper heading hierarchy without skipping levels',
+                        'Minimize JavaScript-rendered content for better crawlability',
+                        'Test mobile-friendliness with Google\'s Mobile-Friendly Test'
                     ]
                 },
                 contentFormat: {
-                    title: 'Add AI-Friendly Formats',
-                    description: 'Your content formats are not optimized for AI extraction.',
+                    title: 'Optimize Content Formats',
+                    description: 'Use AI-preferred content structures and formats.',
                     steps: [
-                        'Create FAQ sections with clear Q&A format',
-                        'Add comparison tables and feature lists',
-                        'Include definitions and glossaries for key terms',
-                        'Use bullet points and numbered lists',
-                        'Aim for 1000+ words on key topic pages'
+                        'Create FAQ sections with clear question-answer format',
+                        'Use lists and bullet points for easy scanning',
+                        'Add comparison tables for products or features',
+                        'Include definitions and glossaries for technical terms',
+                        'Aim for comprehensive coverage (1000+ words) on main topics',
+                        'Structure how-to content with numbered steps',
+                        'Add table of contents for long articles',
+                        'Use Schema.org FAQPage markup for Q&A content'
                     ]
                 },
                 licensing: {
-                    title: 'Prepare for AI Licensing',
-                    description: 'Your site is not ready for AI content usage policies.',
+                    title: 'Establish AI Content Policies',
+                    description: 'Prepare for the AI content ecosystem.',
                     steps: [
-                        'Differentiate bot permissions in robots.txt',
-                        'Create llms.txt with content guidelines',
-                        'Add terms of service page addressing AI usage',
-                        'Consider AI publisher programs (OpenAI, Perplexity)',
-                        'Document your AI content policy clearly'
+                        'Differentiate between training and retrieval bots in robots.txt',
+                        'Create llms.txt file with content guidelines and highlights',
+                        'Add AI usage terms to your terms of service',
+                        'Consider copyright and licensing statements for your content',
+                        'Research AI publisher programs (OpenAI, Perplexity, etc.)',
+                        'Add specific bot rules: Allow for search bots, consider blocking for training',
+                        'Include content licensing information in meta tags',
+                        'Monitor announcements about AI content partnerships'
                     ]
                 }
             };
             
-            return {
-                score: factor.value,
-                ...recommendations[factorKey] || {
-                    title: 'General Improvement',
-                    description: 'This area needs attention.',
-                    steps: ['Review best practices', 'Implement improvements', 'Test changes']
-                }
+            return recommendations[factorKey] || {
+                title: 'General Improvement',
+                description: 'This area needs attention.',
+                steps: ['Review best practices', 'Implement improvements', 'Test changes', 'Monitor results']
             };
         }
 
@@ -1883,12 +1639,6 @@
         document.getElementById('domainInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 analyzeDomain();
-            }
-        });
-        
-        document.getElementById('domainAutoInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                analyzeAuto();
             }
         });
     </script>
