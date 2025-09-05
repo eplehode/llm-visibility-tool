@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Visibility Diagnosis Tool</title>
+    <title>LLM Visibility Diagnosis Tool - Multi-Page Analysis</title>
     <style>
         * {
             margin: 0;
@@ -48,13 +48,57 @@
             margin-bottom: 30px;
         }
 
+        .input-mode-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #f5f5f5;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .single-input {
+            display: block;
+        }
+
+        .multi-input {
+            display: none;
+        }
+
+        .multi-input.active {
+            display: block;
+        }
+
+        .single-input.active {
+            display: block;
+        }
+
         .input-group {
             display: flex;
             gap: 15px;
             align-items: center;
+            margin-bottom: 15px;
         }
 
-        input[type="text"] {
+        input[type="text"], input[type="url"] {
             flex: 1;
             padding: 15px 20px;
             font-size: 1.1rem;
@@ -63,10 +107,42 @@
             transition: all 0.3s;
         }
 
-        input[type="text"]:focus {
+        input[type="text"]:focus, input[type="url"]:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .page-inputs {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .page-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .page-label {
+            min-width: 140px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .page-input-group input {
+            flex: 1;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+        }
+
+        .optional-tag {
+            color: #999;
+            font-size: 0.85rem;
+            font-weight: normal;
         }
 
         .analyze-btn {
@@ -79,6 +155,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            width: 100%;
         }
 
         .analyze-btn:hover {
@@ -90,6 +167,15 @@
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .help-text {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f0ff;
+            border-radius: 8px;
         }
 
         .results-section {
@@ -104,6 +190,74 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-tabs {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 5px;
+            margin-bottom: 0;
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            transition: all 0.3s;
+            color: #666;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .score-cell {
+            font-weight: bold;
+            text-align: center;
         }
 
         .overall-score {
@@ -380,6 +534,13 @@
             color: white;
             font-weight: 600;
         }
+
+        .current-page-indicator {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -387,19 +548,80 @@
         <div class="header">
             <h1>🤖 LLM Visibility Diagnosis Tool</h1>
             <p>Analyze how well AI assistants can discover, understand, and cite your website</p>
-            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">8 Real Factors • 100% Verified Analysis • Complete Recommendations</p>
+            <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">8 Real Factors • Multi-Page Analysis • Complete Recommendations</p>
         </div>
 
         <div class="input-section">
-            <div class="input-group">
-                <input type="text" id="domainInput" placeholder="Enter domain (e.g., example.com)" />
-                <button class="analyze-btn" onclick="analyzeDomain()">Analyze Website</button>
+            <div class="input-mode-toggle">
+                <button class="mode-btn active" onclick="toggleMode('single')">Single Page Analysis</button>
+                <button class="mode-btn" onclick="toggleMode('multi')">Multi-Page Analysis</button>
+            </div>
+
+            <!-- Single Page Input -->
+            <div class="single-input active">
+                <div class="input-group">
+                    <input type="text" id="domainInput" placeholder="Enter domain or URL (e.g., example.com or example.com/blog/article)" />
+                </div>
+                <button class="analyze-btn" onclick="analyzeSingle()">Analyze Page</button>
+            </div>
+
+            <!-- Multi Page Input -->
+            <div class="multi-input">
+                <div class="input-group">
+                    <input type="text" id="mainDomainInput" placeholder="Enter main domain (e.g., example.com)" />
+                </div>
+                
+                <div class="page-inputs">
+                    <h3 style="margin-bottom: 15px; color: #333;">Add specific pages to analyze (optional):</h3>
+                    
+                    <div class="page-input-group">
+                        <label class="page-label">Homepage:</label>
+                        <input type="url" id="homepageUrl" placeholder="Auto-filled from domain">
+                    </div>
+                    
+                    <div class="page-input-group">
+                        <label class="page-label">Blog/Article:</label>
+                        <input type="url" id="blogUrl" placeholder="e.g., example.com/blog/best-practices">
+                    </div>
+                    
+                    <div class="page-input-group">
+                        <label class="page-label">About Us:</label>
+                        <input type="url" id="aboutUrl" placeholder="e.g., example.com/about">
+                    </div>
+                    
+                    <div class="page-input-group">
+                        <label class="page-label">Product/Service:</label>
+                        <input type="url" id="productUrl" placeholder="e.g., example.com/products/main-product">
+                    </div>
+                    
+                    <div class="page-input-group">
+                        <label class="page-label">Contact:</label>
+                        <input type="url" id="contactUrl" placeholder="e.g., example.com/contact">
+                    </div>
+                    
+                    <div class="page-input-group">
+                        <label class="page-label">FAQ:</label>
+                        <input type="url" id="faqUrl" placeholder="e.g., example.com/faq">
+                    </div>
+                    
+                    <div class="page-input-group">
+                        <label class="page-label">Custom Page:</label>
+                        <input type="url" id="customUrl" placeholder="Any other important page">
+                    </div>
+                </div>
+                
+                <button class="analyze-btn" onclick="analyzeMultiple()">Analyze All Pages</button>
+                
+                <div class="help-text">
+                    💡 <strong>Tip:</strong> Leave fields empty to skip them. The tool will analyze each provided URL and show individual + aggregate results.
+                </div>
             </div>
         </div>
 
         <div id="loadingSection" class="loading" style="display: none;">
             <div class="spinner"></div>
-            <p>Analyzing website visibility for AI assistants...</p>
+            <p id="loadingMessage">Analyzing website visibility for AI assistants...</p>
+            <div class="current-page-indicator" id="currentPageIndicator"></div>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
             </div>
@@ -410,28 +632,7 @@
         </div>
 
         <div id="resultsSection" class="results-section">
-            <div class="overall-score">
-                <div class="score-circle">
-                    <svg width="200" height="200">
-                        <circle cx="100" cy="100" r="90" stroke="#e0e0e0" stroke-width="20" fill="none"/>
-                        <circle id="scoreCircle" cx="100" cy="100" r="90" stroke="url(#gradient)" stroke-width="20" fill="none" 
-                                stroke-dasharray="565" stroke-dashoffset="565" stroke-linecap="round"/>
-                        <defs>
-                            <linearGradient id="gradient">
-                                <stop offset="0%" stop-color="#667eea"/>
-                                <stop offset="100%" stop-color="#764ba2"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                    <div class="score-number" id="totalScore">0</div>
-                </div>
-                <div class="score-label">LLM Visibility Score (out of 80)</div>
-                <div class="score-status" id="scoreStatus">Calculating...</div>
-            </div>
-
-            <div class="factors-grid" id="factorsGrid"></div>
-
-            <div class="recommendations" id="recommendations"></div>
+            <!-- Tabs will be dynamically added here -->
         </div>
     </div>
 
@@ -443,71 +644,562 @@
         const AI_BOTS = ['GPTBot', 'OAI-SearchBot', 'ClaudeBot', 'PerplexityBot', 'ChatGPT-User', 'CCBot', 'Amazonbot', 'Applebot'];
         
         let analysisResults = {};
+        let currentMode = 'single';
+        let multiPageResults = {};
 
-        async function analyzeDomain() {
-            const domainInput = document.getElementById('domainInput');
-            const domain = domainInput.value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+        // Auto-fill homepage when domain is entered
+        document.getElementById('mainDomainInput').addEventListener('input', function(e) {
+            const domain = e.target.value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+            if (domain) {
+                document.getElementById('homepageUrl').placeholder = `https://${domain}`;
+            }
+        });
+
+        function toggleMode(mode) {
+            currentMode = mode;
             
-            if (!domain) {
-                showError('Please enter a valid domain');
+            // Update buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show/hide inputs
+            if (mode === 'single') {
+                document.querySelector('.single-input').style.display = 'block';
+                document.querySelector('.multi-input').style.display = 'none';
+            } else {
+                document.querySelector('.single-input').style.display = 'none';
+                document.querySelector('.multi-input').style.display = 'block';
+            }
+        }
+
+        async function analyzeSingle() {
+            const domainInput = document.getElementById('domainInput');
+            const url = domainInput.value.trim();
+            
+            if (!url) {
+                showError('Please enter a valid domain or URL');
                 return;
             }
 
             // Reset and show loading
             document.getElementById('resultsSection').classList.remove('active');
+            document.getElementById('resultsSection').innerHTML = '';
             document.getElementById('errorSection').style.display = 'none';
             document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('loadingMessage').textContent = 'Analyzing page...';
+            document.getElementById('currentPageIndicator').textContent = '';
             
             try {
-                await performAnalysis(domain);
+                const cleanUrl = url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                await performAnalysis(cleanUrl, 'Single Page');
+                displaySingleResults();
             } catch (error) {
-                showError(`Analysis failed: ${error.message}. Please ensure the domain is accessible and try again.`);
+                showError(`Analysis failed: ${error.message}`);
             } finally {
                 document.getElementById('loadingSection').style.display = 'none';
             }
         }
 
-        async function performAnalysis(domain) {
+        async function analyzeMultiple() {
+            const mainDomain = document.getElementById('mainDomainInput').value.trim();
+            
+            if (!mainDomain) {
+                showError('Please enter the main domain');
+                return;
+            }
+
+            // Collect all URLs to analyze
+            const pages = [
+                { 
+                    name: 'Homepage', 
+                    url: document.getElementById('homepageUrl').value || `https://${mainDomain.replace(/^https?:\/\//, '')}`,
+                    type: 'homepage'
+                },
+                { 
+                    name: 'Blog/Article', 
+                    url: document.getElementById('blogUrl').value,
+                    type: 'blog'
+                },
+                { 
+                    name: 'About Us', 
+                    url: document.getElementById('aboutUrl').value,
+                    type: 'about'
+                },
+                { 
+                    name: 'Product/Service', 
+                    url: document.getElementById('productUrl').value,
+                    type: 'product'
+                },
+                { 
+                    name: 'Contact', 
+                    url: document.getElementById('contactUrl').value,
+                    type: 'contact'
+                },
+                { 
+                    name: 'FAQ', 
+                    url: document.getElementById('faqUrl').value,
+                    type: 'faq'
+                },
+                { 
+                    name: 'Custom Page', 
+                    url: document.getElementById('customUrl').value,
+                    type: 'custom'
+                }
+            ].filter(page => page.url); // Only include pages with URLs
+
+            if (pages.length === 0) {
+                showError('Please enter at least one URL to analyze');
+                return;
+            }
+
+            // Reset results
+            multiPageResults = {};
+            document.getElementById('resultsSection').classList.remove('active');
+            document.getElementById('resultsSection').innerHTML = '';
+            document.getElementById('errorSection').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+            
+            // Analyze each page
+            for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+                document.getElementById('loadingMessage').textContent = `Analyzing ${page.name}...`;
+                document.getElementById('currentPageIndicator').textContent = `Page ${i + 1} of ${pages.length}`;
+                
+                try {
+                    const cleanUrl = page.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                    await performAnalysis(cleanUrl, page.name);
+                    multiPageResults[page.type] = {
+                        name: page.name,
+                        url: page.url,
+                        results: {...analysisResults}
+                    };
+                } catch (error) {
+                    console.error(`Failed to analyze ${page.name}:`, error);
+                    multiPageResults[page.type] = {
+                        name: page.name,
+                        url: page.url,
+                        error: error.message
+                    };
+                }
+                
+                // Update overall progress
+                const overallProgress = ((i + 1) / pages.length) * 100;
+                updateProgress(overallProgress, `Completed ${i + 1} of ${pages.length} pages`);
+            }
+            
+            document.getElementById('loadingSection').style.display = 'none';
+            displayMultiPageResults();
+        }
+
+        async function performAnalysis(url, pageName = '') {
             analysisResults = {
-                domain: domain,
+                url: url,
+                pageName: pageName,
                 factors: {},
                 totalScore: 0
             };
 
-            const baseUrl = `https://${domain}`;
+            // Determine if it's a full URL or just domain
+            const baseUrl = url.startsWith('http') ? url : `https://${url}`;
             
-            // Update progress
-            updateProgress(12, 'Checking bot accessibility...');
+            // Update progress for single page analysis
+            if (!pageName || currentMode === 'single') {
+                updateProgress(12, 'Checking bot accessibility...');
+            }
             analysisResults.factors.botAccessibility = await checkBotAccessibility(baseUrl);
             
-            updateProgress(24, 'Analyzing content structure...');
+            if (!pageName || currentMode === 'single') {
+                updateProgress(24, 'Analyzing content structure...');
+            }
             analysisResults.factors.parsability = await checkParsability(baseUrl);
             
-            updateProgress(36, 'Evaluating citation friendliness...');
+            if (!pageName || currentMode === 'single') {
+                updateProgress(36, 'Evaluating citation friendliness...');
+            }
             analysisResults.factors.citationFriendliness = await checkCitationFriendliness(baseUrl);
             
-            updateProgress(48, 'Assessing authority signals...');
+            if (!pageName || currentMode === 'single') {
+                updateProgress(48, 'Assessing authority signals...');
+            }
             analysisResults.factors.authority = await checkAuthority(baseUrl);
             
-            updateProgress(60, 'Checking content freshness...');
+            if (!pageName || currentMode === 'single') {
+                updateProgress(60, 'Checking content freshness...');
+            }
             analysisResults.factors.freshness = await checkFreshness(baseUrl);
             
-            updateProgress(72, 'Analyzing technical signals...');
+            if (!pageName || currentMode === 'single') {
+                updateProgress(72, 'Analyzing technical signals...');
+            }
             analysisResults.factors.technical = await checkTechnical(baseUrl);
             
-            updateProgress(84, 'Reviewing content formats...');
+            if (!pageName || currentMode === 'single') {
+                updateProgress(84, 'Reviewing content formats...');
+            }
             analysisResults.factors.contentFormat = await checkContentFormat(baseUrl);
             
-            updateProgress(96, 'Checking licensing readiness...');
+            if (!pageName || currentMode === 'single') {
+                updateProgress(96, 'Checking licensing readiness...');
+            }
             analysisResults.factors.licensing = await checkLicensing(baseUrl);
             
-            updateProgress(100, 'Generating report...');
+            if (!pageName || currentMode === 'single') {
+                updateProgress(100, 'Generating report...');
+            }
             
             // Calculate total score
             calculateTotalScore();
+        }
+
+        function displaySingleResults() {
+            const resultsSection = document.getElementById('resultsSection');
             
-            // Display results
-            displayResults();
+            const html = `
+                <div class="overall-score">
+                    <div class="score-circle">
+                        <svg width="200" height="200">
+                            <circle cx="100" cy="100" r="90" stroke="#e0e0e0" stroke-width="20" fill="none"/>
+                            <circle id="scoreCircle" cx="100" cy="100" r="90" stroke="url(#gradient)" stroke-width="20" fill="none" 
+                                    stroke-dasharray="565" stroke-dashoffset="565" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="gradient">
+                                    <stop offset="0%" stop-color="#667eea"/>
+                                    <stop offset="100%" stop-color="#764ba2"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="score-number" id="totalScore">0</div>
+                    </div>
+                    <div class="score-label">LLM Visibility Score (out of 80)</div>
+                    <div class="score-status" id="scoreStatus">Calculating...</div>
+                </div>
+
+                <div class="factors-grid" id="factorsGrid"></div>
+                <div class="recommendations" id="recommendations"></div>
+            `;
+            
+            resultsSection.innerHTML = html;
+            resultsSection.classList.add('active');
+            
+            // Animate score
+            animateScore(analysisResults.totalScore);
+            
+            // Display factors
+            displayFactors();
+            
+            // Generate recommendations
+            generateAllRecommendations();
+        }
+
+        function displayMultiPageResults() {
+            const resultsSection = document.getElementById('resultsSection');
+            
+            // Create tabs
+            let tabsHtml = '<div class="results-tabs">';
+            tabsHtml += '<button class="tab-btn active" onclick="showTab(\'overview\')">Overview</button>';
+            
+            Object.keys(multiPageResults).forEach(type => {
+                const page = multiPageResults[type];
+                if (!page.error) {
+                    tabsHtml += `<button class="tab-btn" onclick="showTab('${type}')">${page.name}</button>`;
+                }
+            });
+            
+            tabsHtml += '</div>';
+            
+            // Create tab contents
+            let contentHtml = '';
+            
+            // Overview tab
+            contentHtml += '<div id="overview-tab" class="tab-content active">';
+            contentHtml += generateOverviewContent();
+            contentHtml += '</div>';
+            
+            // Individual page tabs
+            Object.keys(multiPageResults).forEach(type => {
+                const page = multiPageResults[type];
+                if (!page.error) {
+                    contentHtml += `<div id="${type}-tab" class="tab-content">`;
+                    contentHtml += generatePageContent(page);
+                    contentHtml += '</div>';
+                }
+            });
+            
+            resultsSection.innerHTML = tabsHtml + contentHtml;
+            resultsSection.classList.add('active');
+        }
+
+        function generateOverviewContent() {
+            let html = '<h2>📊 Multi-Page Analysis Overview</h2>';
+            
+            // Calculate average scores
+            const factorAverages = {};
+            let pageCount = 0;
+            let totalAverage = 0;
+            
+            Object.keys(multiPageResults).forEach(type => {
+                const page = multiPageResults[type];
+                if (!page.error && page.results) {
+                    pageCount++;
+                    totalAverage += page.results.totalScore;
+                    
+                    Object.keys(page.results.factors).forEach(factor => {
+                        if (!factorAverages[factor]) {
+                            factorAverages[factor] = { total: 0, count: 0, scores: [] };
+                        }
+                        factorAverages[factor].total += page.results.factors[factor].value;
+                        factorAverages[factor].count++;
+                        factorAverages[factor].scores.push({
+                            page: page.name,
+                            score: page.results.factors[factor].value
+                        });
+                    });
+                }
+            });
+            
+            if (pageCount > 0) {
+                totalAverage = Math.round(totalAverage / pageCount);
+            }
+            
+            // Overall average score
+            html += `
+                <div class="overall-score" style="margin-bottom: 30px;">
+                    <h3>Average LLM Visibility Score: ${totalAverage}/80</h3>
+                    <p style="color: #666;">Based on ${pageCount} pages analyzed</p>
+                </div>
+            `;
+            
+            // Comparison table
+            html += `
+                <h3>Page Comparison</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Page</th>
+                            <th>Total Score</th>
+                            <th>Bot Access</th>
+                            <th>Structure</th>
+                            <th>Citations</th>
+                            <th>Authority</th>
+                            <th>Freshness</th>
+                            <th>Technical</th>
+                            <th>Format</th>
+                            <th>Licensing</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            Object.keys(multiPageResults).forEach(type => {
+                const page = multiPageResults[type];
+                if (!page.error && page.results) {
+                    const factors = page.results.factors;
+                    html += `
+                        <tr>
+                            <td><strong>${page.name}</strong></td>
+                            <td class="score-cell" style="color: ${getScoreColor(page.results.totalScore, 80)}">${page.results.totalScore}/80</td>
+                            <td class="score-cell" style="color: ${getScoreColor(factors.botAccessibility.value, 10)}">${factors.botAccessibility.value}/10</td>
+                            <td class="score-cell" style="color: ${getScoreColor(factors.parsability.value, 10)}">${factors.parsability.value}/10</td>
+                            <td class="score-cell" style="color: ${getScoreColor(factors.citationFriendliness.value, 10)}">${factors.citationFriendliness.value}/10</td>
+                            <td class="score-cell" style="color: ${getScoreColor(factors.authority.value, 10)}">${factors.authority.value}/10</td>
+                            <td class="score-cell" style="color: ${getScoreColor(factors.freshness.value, 10)}">${factors.freshness.value}/10</td>
+                            <td class="score-cell" style="color: ${getScoreColor(factors.technical.value, 10)}">${factors.technical.value}/10</td>
+                            <td class="score-cell" style="color: ${getScoreColor(factors.contentFormat.value, 10)}">${factors.contentFormat.value}/10</td>
+                            <td class="score-cell" style="color: ${getScoreColor(factors.licensing.value, 10)}">${factors.licensing.value}/10</td>
+                        </tr>
+                    `;
+                }
+            });
+            
+            // Add averages row
+            html += '<tr style="background: #f0f0ff; font-weight: bold;">';
+            html += '<td>Average</td>';
+            html += `<td class="score-cell">${totalAverage}/80</td>`;
+            
+            ['botAccessibility', 'parsability', 'citationFriendliness', 'authority', 'freshness', 'technical', 'contentFormat', 'licensing'].forEach(factor => {
+                if (factorAverages[factor]) {
+                    const avg = Math.round(factorAverages[factor].total / factorAverages[factor].count);
+                    html += `<td class="score-cell">${avg}/10</td>`;
+                } else {
+                    html += '<td>-</td>';
+                }
+            });
+            
+            html += '</tr></tbody></table>';
+            
+            // Key insights
+            html += '<div style="margin-top: 30px;"><h3>🔍 Key Insights</h3>';
+            
+            // Best performing page
+            let bestPage = null;
+            let bestScore = 0;
+            Object.keys(multiPageResults).forEach(type => {
+                const page = multiPageResults[type];
+                if (!page.error && page.results && page.results.totalScore > bestScore) {
+                    bestScore = page.results.totalScore;
+                    bestPage = page.name;
+                }
+            });
+            
+            // Worst performing page
+            let worstPage = null;
+            let worstScore = 100;
+            Object.keys(multiPageResults).forEach(type => {
+                const page = multiPageResults[type];
+                if (!page.error && page.results && page.results.totalScore < worstScore) {
+                    worstScore = page.results.totalScore;
+                    worstPage = page.name;
+                }
+            });
+            
+            html += `
+                <ul style="line-height: 2;">
+                    <li>📈 <strong>Best performing page:</strong> ${bestPage} (${bestScore}/80)</li>
+                    <li>📉 <strong>Needs most improvement:</strong> ${worstPage} (${worstScore}/80)</li>
+            `;
+            
+            // Find weakest factors across all pages
+            let weakestFactor = null;
+            let weakestAvg = 10;
+            Object.keys(factorAverages).forEach(factor => {
+                const avg = factorAverages[factor].total / factorAverages[factor].count;
+                if (avg < weakestAvg) {
+                    weakestAvg = avg;
+                    weakestFactor = factor;
+                }
+            });
+            
+            const factorNames = {
+                botAccessibility: 'Bot Accessibility',
+                parsability: 'Parsability & Structure',
+                citationFriendliness: 'Citation Friendliness',
+                authority: 'Authority & Trust',
+                freshness: 'Freshness & Feeds',
+                technical: 'Technical Signals',
+                contentFormat: 'Content Format',
+                licensing: 'Licensing Readiness'
+            };
+            
+            html += `
+                    <li>⚠️ <strong>Weakest factor overall:</strong> ${factorNames[weakestFactor]} (avg: ${Math.round(weakestAvg)}/10)</li>
+                    <li>💡 <strong>Recommendation:</strong> Focus on improving ${factorNames[weakestFactor]} across all pages for maximum impact</li>
+                </ul>
+            </div>`;
+            
+            return html;
+        }
+
+        function generatePageContent(page) {
+            // Temporarily set global analysisResults to this page's results
+            analysisResults = page.results;
+            
+            let html = `
+                <h2>Analysis: ${page.name}</h2>
+                <p style="color: #666; margin-bottom: 20px;">URL: ${page.url}</p>
+                
+                <div class="overall-score">
+                    <div class="score-circle">
+                        <svg width="200" height="200">
+                            <circle cx="100" cy="100" r="90" stroke="#e0e0e0" stroke-width="20" fill="none"/>
+                            <circle class="page-score-circle" cx="100" cy="100" r="90" stroke="url(#gradient-${page.name.replace(/\s+/g, '-')})" 
+                                    stroke-width="20" fill="none" stroke-dasharray="565" stroke-dashoffset="${565 - (page.results.totalScore / 80) * 565}" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="gradient-${page.name.replace(/\s+/g, '-')}">
+                                    <stop offset="0%" stop-color="#667eea"/>
+                                    <stop offset="100%" stop-color="#764ba2"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="score-number">${page.results.totalScore}</div>
+                    </div>
+                    <div class="score-label">LLM Visibility Score (out of 80)</div>
+                    <div class="score-status" style="color: ${getStatusColor(page.results.totalScore)}">${getStatus(page.results.totalScore)}</div>
+                </div>
+                
+                <div class="factors-grid" id="factors-${page.name.replace(/\s+/g, '-')}"></div>
+                <div class="recommendations" id="recommendations-${page.name.replace(/\s+/g, '-')}"></div>
+            `;
+            
+            // Generate factor cards and recommendations for this page
+            setTimeout(() => {
+                if (document.getElementById(`factors-${page.name.replace(/\s+/g, '-')}`)) {
+                    displayFactorsForPage(page.results, `factors-${page.name.replace(/\s+/g, '-')}`);
+                    generateRecommendationsForPage(page.results, `recommendations-${page.name.replace(/\s+/g, '-')}`);
+                }
+            }, 100);
+            
+            return html;
+        }
+
+        function displayFactorsForPage(results, elementId) {
+            const factorsGrid = document.getElementById(elementId);
+            if (!factorsGrid) return;
+            
+            factorsGrid.innerHTML = '';
+            
+            const factorNames = {
+                botAccessibility: 'Bot Accessibility',
+                parsability: 'Parsability & Structure',
+                citationFriendliness: 'Citation Friendliness',
+                authority: 'Authority & Trust',
+                freshness: 'Freshness & Feeds',
+                technical: 'Technical Signals',
+                contentFormat: 'Content Format',
+                licensing: 'Licensing Readiness'
+            };
+            
+            for (const [key, factor] of Object.entries(results.factors)) {
+                const card = createFactorCard(factorNames[key], factor);
+                factorsGrid.appendChild(card);
+            }
+        }
+
+        function generateRecommendationsForPage(results, elementId) {
+            const recommendationsEl = document.getElementById(elementId);
+            if (!recommendationsEl) return;
+            
+            // Use the existing generateAllRecommendations logic but target specific element
+            analysisResults = results; // Temporarily set for recommendation generation
+            const html = generateRecommendationsHTML();
+            recommendationsEl.innerHTML = html;
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            // Update button state
+            event.target.classList.add('active');
+        }
+
+        function getScoreColor(score, max) {
+            const percentage = (score / max) * 100;
+            if (percentage >= 70) return '#4caf50';
+            if (percentage >= 40) return '#ff9800';
+            return '#f44336';
+        }
+
+        function getStatus(score) {
+            if (score >= 70) return 'Excellent LLM Visibility';
+            if (score >= 50) return 'Good LLM Visibility';
+            if (score >= 35) return 'Moderate LLM Visibility';
+            return 'Needs Improvement';
+        }
+
+        function getStatusColor(score) {
+            if (score >= 50) return '#4caf50';
+            if (score >= 35) return '#ff9800';
+            return '#f44336';
         }
 
         async function fetchWithCORS(url, type = 'html') {
@@ -546,12 +1238,16 @@
             }
         }
 
+        // [Include all the checking functions from the previous version - they remain the same]
+        // checkBotAccessibility, checkParsability, checkCitationFriendliness, etc.
+        
         async function checkBotAccessibility(baseUrl) {
             const score = { value: 0, max: 10, details: [], checks: [], debug: [] };
             
             try {
-                // Check robots.txt
-                const robotsUrl = `${baseUrl}/robots.txt`;
+                // For URLs with paths, extract just the domain for robots.txt
+                const urlObj = new URL(baseUrl);
+                const robotsUrl = `${urlObj.protocol}//${urlObj.hostname}/robots.txt`;
                 const robotsContent = await fetchWithCORS(robotsUrl);
                 
                 if (robotsContent) {
@@ -561,13 +1257,11 @@
                     
                     // Check for AI bot allowances
                     const allowedBots = AI_BOTS.filter(bot => {
-                        // Check if bot is NOT explicitly disallowed
                         const disallowPattern = new RegExp(`User-agent:\\s*${bot}\\s*\\nDisallow:\\s*/`, 'i');
                         const allowPattern = new RegExp(`User-agent:\\s*${bot}\\s*\\nAllow:\\s*/`, 'i');
                         const isDisallowed = disallowPattern.test(robotsContent);
                         const isAllowed = allowPattern.test(robotsContent);
                         
-                        // Also check for wildcard allowance
                         const wildcardAllow = robotsContent.includes('User-agent: *') && 
                                             !robotsContent.includes('Disallow: /');
                         
@@ -584,7 +1278,6 @@
                         score.checks.push({ name: 'AI bots allowed', status: 'fail' });
                     }
                     
-                    // Check for llms.txt reference
                     if (robotsContent.toLowerCase().includes('llms.txt')) {
                         score.value += 2;
                         score.details.push('llms.txt reference found');
@@ -600,7 +1293,7 @@
                 
                 // Check for llms.txt directly
                 try {
-                    const llmsUrl = `${baseUrl}/llms.txt`;
+                    const llmsUrl = `${urlObj.protocol}//${urlObj.hostname}/llms.txt`;
                     const llmsContent = await fetchWithCORS(llmsUrl);
                     if (llmsContent) {
                         score.value += 1;
@@ -885,7 +1578,7 @@
                     
                     if (trustSignals.length > 2) {
                         score.value += 2;
-                        score.details.push(`Trust signals present (${trustSignals.join(', ')})`);
+                        score.details.push(`Trust signals present`);
                         score.checks.push({ name: 'Trust indicators', status: 'pass' });
                     } else if (trustSignals.length > 0) {
                         score.value += 1;
@@ -916,11 +1609,12 @@
             const score = { value: 0, max: 10, details: [], checks: [], debug: [] };
             
             try {
-                // Check for sitemap
+                // Extract domain for sitemap check
+                const urlObj = new URL(baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`);
                 const sitemapUrls = [
-                    `${baseUrl}/sitemap.xml`,
-                    `${baseUrl}/sitemap_index.xml`,
-                    `${baseUrl}/sitemap`
+                    `${urlObj.protocol}//${urlObj.hostname}/sitemap.xml`,
+                    `${urlObj.protocol}//${urlObj.hostname}/sitemap_index.xml`,
+                    `${urlObj.protocol}//${urlObj.hostname}/sitemap`
                 ];
                 
                 let sitemapFound = false;
@@ -939,7 +1633,6 @@
                     score.details.push('XML sitemap found');
                     score.checks.push({ name: 'XML sitemap', status: 'pass' });
                     
-                    // Check for lastmod dates
                     if (sitemapContent.includes('<lastmod>') || sitemapContent.includes('lastmod')) {
                         score.value += 2;
                         score.details.push('Sitemap includes update dates');
@@ -988,16 +1681,6 @@
                         score.value += 2;
                         score.details.push('Recent content found');
                         score.checks.push({ name: 'Recent content', status: 'pass' });
-                        
-                        // Check for specific months for extra freshness
-                        const months = ['January', 'February', 'March', 'April', 'May', 'June', 
-                                      'July', 'August', 'September', 'October', 'November', 'December'];
-                        const currentMonth = new Date().getMonth();
-                        const recentMonths = months.slice(Math.max(0, currentMonth - 2), currentMonth + 1);
-                        
-                        if (recentMonths.some(month => htmlContent.includes(month))) {
-                            score.debug.push('Very recent content (within 3 months)');
-                        }
                     } else {
                         score.checks.push({ name: 'Recent content', status: 'fail' });
                     }
@@ -1071,7 +1754,6 @@
                         
                         score.debug.push(`Images: ${images.length} total, ${imagesWithAlt.length} with alt, ${imagesWithGoodAlt.length} with good alt`);
                     } else {
-                        // No images, so not penalized
                         score.value += 1;
                         score.details.push('No images to check');
                         score.checks.push({ name: 'Image alt text', status: 'pass' });
@@ -1117,7 +1799,7 @@
                         htmlContent.includes('"@type":"FAQPage"'),
                         htmlContent.includes('"@type":"Question"'),
                         doc.querySelector('.faq, #faq, [class*="faq"], [id*="faq"]'),
-                        doc.querySelector('dl'), // Definition lists often used for FAQs
+                        doc.querySelector('dl'),
                         Array.from(doc.querySelectorAll('h2, h3, h4')).some(h => 
                             h.textContent.toLowerCase().includes('?')
                         )
@@ -1205,8 +1887,9 @@
             const score = { value: 0, max: 10, details: [], checks: [], debug: [] };
             
             try {
-                // Check robots.txt for differentiation
-                const robotsUrl = `${baseUrl}/robots.txt`;
+                // Extract domain for robots.txt check
+                const urlObj = new URL(baseUrl.startsWith('http') ? baseUrl : `https://${baseUrl}`);
+                const robotsUrl = `${urlObj.protocol}//${urlObj.hostname}/robots.txt`;
                 const robotsContent = await fetchWithCORS(robotsUrl);
                 
                 if (robotsContent) {
@@ -1235,7 +1918,6 @@
                         score.checks.push({ name: 'Bot differentiation', status: 'fail' });
                     }
                     
-                    // Check for llms.txt
                     if (robotsContent.toLowerCase().includes('llms.txt')) {
                         score.value += 3;
                         score.details.push('llms.txt configured');
@@ -1290,7 +1972,9 @@
             
             const loadingSection = document.getElementById('loadingSection');
             const statusText = loadingSection.querySelector('p');
-            statusText.textContent = message;
+            if (message) {
+                statusText.textContent = message;
+            }
         }
 
         function calculateTotalScore() {
@@ -1299,22 +1983,6 @@
                 total += analysisResults.factors[factor].value;
             }
             analysisResults.totalScore = Math.round(total);
-        }
-
-        function displayResults() {
-            const resultsSection = document.getElementById('resultsSection');
-            
-            // Display total score with animation
-            animateScore(analysisResults.totalScore);
-            
-            // Display factor cards
-            displayFactors();
-            
-            // Generate ALL recommendations
-            generateAllRecommendations();
-            
-            // Show results
-            resultsSection.classList.add('active');
         }
 
         function animateScore(targetScore) {
@@ -1340,19 +2008,8 @@
             scoreCircle.style.strokeDashoffset = offset;
             
             // Set status message
-            if (targetScore >= 70) {
-                scoreStatus.textContent = 'Excellent LLM Visibility';
-                scoreStatus.style.color = '#4caf50';
-            } else if (targetScore >= 50) {
-                scoreStatus.textContent = 'Good LLM Visibility';
-                scoreStatus.style.color = '#4caf50';
-            } else if (targetScore >= 35) {
-                scoreStatus.textContent = 'Moderate LLM Visibility';
-                scoreStatus.style.color = '#ff9800';
-            } else {
-                scoreStatus.textContent = 'Needs Improvement';
-                scoreStatus.style.color = '#f44336';
-            }
+            scoreStatus.textContent = getStatus(targetScore);
+            scoreStatus.style.color = getStatusColor(targetScore);
         }
 
         function displayFactors() {
@@ -1383,7 +2040,6 @@
             const scoreColor = factor.value >= 8 ? '#4caf50' : 
                              factor.value >= 5 ? '#ff9800' : '#f44336';
             
-            // Include debug info if available
             const debugInfo = factor.debug && factor.debug.length > 0 
                 ? `<div class="debug-info">Debug: ${factor.debug.join(' | ')}</div>` 
                 : '';
@@ -1412,7 +2068,11 @@
 
         function generateAllRecommendations() {
             const recommendations = document.getElementById('recommendations');
-            
+            const html = generateRecommendationsHTML();
+            recommendations.innerHTML = html;
+        }
+
+        function generateRecommendationsHTML() {
             const factorInfo = {
                 botAccessibility: {
                     name: 'Bot Accessibility',
@@ -1456,17 +2116,14 @@
                 }
             };
             
-            // Build comprehensive recommendations HTML
             let html = '<h2>📋 Complete Analysis & Recommendations</h2>';
             
-            // Add all factors with their recommendations
             for (const [key, factor] of Object.entries(analysisResults.factors)) {
                 const info = factorInfo[key];
                 const score = factor.value;
                 const maxScore = factor.max;
                 const percentage = Math.round((score / maxScore) * 100);
                 
-                // Determine priority
                 let priority = 'low';
                 let priorityText = 'Low Priority';
                 if (percentage < 40) {
@@ -1477,7 +2134,6 @@
                     priorityText = 'Medium Priority';
                 }
                 
-                // Get specific recommendations for this factor
                 const rec = getRecommendation(key, factor);
                 
                 html += `
@@ -1507,7 +2163,7 @@
                 `;
             }
             
-            recommendations.innerHTML = html;
+            return html;
         }
 
         function getRecommendation(factorKey, factor) {
@@ -1563,84 +2219,3 @@
                         'Include privacy policy and terms of service pages',
                         'Register with Google Business Profile if applicable'
                     ]
-                },
-                freshness: {
-                    title: 'Signal Content Freshness',
-                    description: 'Help AI systems identify your most current content.',
-                    steps: [
-                        'Create and submit XML sitemap with <lastmod> dates',
-                        'Implement RSS or Atom feed for new content',
-                        'Display "Published" and "Last Updated" dates visibly on pages',
-                        'Use Schema.org datePublished and dateModified properties',
-                        'Update content regularly with current information',
-                        'Include current year in footers and relevant content',
-                        'Submit sitemap to Google Search Console and Bing Webmaster Tools',
-                        'Consider implementing a "Recent Updates" section'
-                    ]
-                },
-                technical: {
-                    title: 'Optimize Technical Implementation',
-                    description: 'Ensure technical excellence for AI processing.',
-                    steps: [
-                        'Implement semantic HTML5 structure: <header>, <main>, <footer>, <article>',
-                        'Add descriptive alt text to all images (not just "image")',
-                        'Include viewport meta tag for mobile optimization',
-                        'Use responsive images with srcset attributes',
-                        'Implement structured data breadcrumbs for navigation',
-                        'Ensure proper heading hierarchy without skipping levels',
-                        'Minimize JavaScript-rendered content for better crawlability',
-                        'Test mobile-friendliness with Google\'s Mobile-Friendly Test'
-                    ]
-                },
-                contentFormat: {
-                    title: 'Optimize Content Formats',
-                    description: 'Use AI-preferred content structures and formats.',
-                    steps: [
-                        'Create FAQ sections with clear question-answer format',
-                        'Use lists and bullet points for easy scanning',
-                        'Add comparison tables for products or features',
-                        'Include definitions and glossaries for technical terms',
-                        'Aim for comprehensive coverage (1000+ words) on main topics',
-                        'Structure how-to content with numbered steps',
-                        'Add table of contents for long articles',
-                        'Use Schema.org FAQPage markup for Q&A content'
-                    ]
-                },
-                licensing: {
-                    title: 'Establish AI Content Policies',
-                    description: 'Prepare for the AI content ecosystem.',
-                    steps: [
-                        'Differentiate between training and retrieval bots in robots.txt',
-                        'Create llms.txt file with content guidelines and highlights',
-                        'Add AI usage terms to your terms of service',
-                        'Consider copyright and licensing statements for your content',
-                        'Research AI publisher programs (OpenAI, Perplexity, etc.)',
-                        'Add specific bot rules: Allow for search bots, consider blocking for training',
-                        'Include content licensing information in meta tags',
-                        'Monitor announcements about AI content partnerships'
-                    ]
-                }
-            };
-            
-            return recommendations[factorKey] || {
-                title: 'General Improvement',
-                description: 'This area needs attention.',
-                steps: ['Review best practices', 'Implement improvements', 'Test changes', 'Monitor results']
-            };
-        }
-
-        function showError(message) {
-            document.getElementById('errorSection').style.display = 'block';
-            document.getElementById('errorMessage').textContent = message;
-            document.getElementById('loadingSection').style.display = 'none';
-        }
-
-        // Allow Enter key to trigger analysis
-        document.getElementById('domainInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                analyzeDomain();
-            }
-        });
-    </script>
-</body>
-</html>
